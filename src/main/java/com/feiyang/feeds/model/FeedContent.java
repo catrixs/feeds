@@ -2,11 +2,6 @@ package com.feiyang.feeds.model;
 
 import java.util.Calendar;
 
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.Text;
-
 /**
  * Feed content archive.
  * 
@@ -34,15 +29,17 @@ public class FeedContent {
 		this.description = description;
 	}
 
-	public FeedContent(Entity entity) {
-		this.id = entity.getKey().getId();
-		this.site = (String) entity.getProperty("site");
-		this.link = (String) entity.getProperty("link");
-		this.title = (String) entity.getProperty("title");
-		this.description = ((Text) entity.getProperty("desc")).getValue();
-		this.category = (String) entity.getProperty("category");
-		this.author = (String) entity.getProperty("author");
-		this.pubDate = (Calendar) entity.getProperty("pubDate");
+	public FeedContent(long id, String site, String link, String title, String description, String category,
+			String author, Calendar pubDate) {
+		super();
+		this.id = id;
+		this.site = site;
+		this.link = link;
+		this.title = title;
+		this.description = description;
+		this.category = category;
+		this.author = author;
+		this.pubDate = pubDate;
 	}
 
 	public String getTitle() {
@@ -135,16 +132,26 @@ public class FeedContent {
 		return true;
 	}
 
-	public Entity toEntity() {
-		Key feedKey = KeyFactory.createKey(FeedContent.class.getSimpleName(), id);
-		Entity feedContentEntity = new Entity(feedKey);
-		feedContentEntity.setProperty("site", site);
-		feedContentEntity.setProperty("link", link);
-		feedContentEntity.setProperty("title", title);
-		feedContentEntity.setProperty("desc", new Text(description));
-		feedContentEntity.setProperty("author", author);
-		feedContentEntity.setProperty("pubDate", pubDate);
-		feedContentEntity.setProperty("category", category);
-		return feedContentEntity;
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("FeedContent [id=");
+		builder.append(id);
+		builder.append(", site=");
+		builder.append(site);
+		builder.append(", link=");
+		builder.append(link);
+		builder.append(", title=");
+		builder.append(title);
+		builder.append(", description=");
+		builder.append(description);
+		builder.append(", category=");
+		builder.append(category);
+		builder.append(", author=");
+		builder.append(author);
+		builder.append(", pubDate=");
+		builder.append(pubDate);
+		builder.append("]");
+		return builder.toString();
 	}
 }

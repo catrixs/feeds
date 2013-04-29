@@ -4,6 +4,6 @@ import java.util.List;
 
 import com.feiyang.feeds.model.FeedContent;
 
-public interface CrawlerService {
-	List<FeedContent> crawl(String site);
+public interface FeedContentService {
+	List<FeedContent> latestContent(String site, int limit);
 }

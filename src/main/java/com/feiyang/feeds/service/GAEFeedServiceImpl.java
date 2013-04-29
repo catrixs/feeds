@@ -3,26 +3,30 @@ package com.feiyang.feeds.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.feiyang.feeds.model.Category;
+import com.feiyang.feeds.model.CategoryEntityHelper;
 import com.feiyang.feeds.model.FeedContent;
+import com.feiyang.feeds.model.FeedContentEntityHelper;
 import com.feiyang.feeds.model.Subscribe;
+import com.feiyang.feeds.model.SubscribeEntityHelper;
+import com.feiyang.feeds.model.UserEntityHelper;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.users.User;
 
 @Component
 public class GAEFeedServiceImpl implements FeedService {
@@ -34,13 +38,12 @@ public class GAEFeedServiceImpl implements FeedService {
 			return Collections.emptyList();
 		}
 
-		Query q = new Query(Category.class.getSimpleName()).setAncestor(KeyFactory.createKey(
-				User.class.getSimpleName(), uid));
+		Query q = new Query(CategoryEntityHelper.kind()).setAncestor(UserEntityHelper.key(uid));
 		PreparedQuery pq = datastore.prepare(q);
 
 		List<Category> rs = new ArrayList<>();
 		for (Entity result : pq.asIterable()) {
-			Category category = new Category(result);
+			Category category = CategoryEntityHelper.toCategory(result);
 			rs.add(category);
 		}
 		return rs;
@@ -57,36 +60,32 @@ public class GAEFeedServiceImpl implements FeedService {
 			return Collections.emptyMap();
 		}
 
-		List<Key> keys = new ArrayList<>(subscribeIds.size());
-		for (Long subscribId : subscribeIds) {
-			keys.add(KeyFactory.createKey(Subscribe.class.getSimpleName(), subscribId));
-		}
+		List<Key> keys = SubscribeEntityHelper.keys(subscribeIds);
 		Filter subscribeFilter = new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.IN, keys);
 
 		PreparedQuery pq = datastore.prepare(new Query(Subscribe.class.getSimpleName()).setFilter(subscribeFilter));
 
 		List<Subscribe> subscribes = new ArrayList<>();
 		for (Entity entity : pq.asIterable()) {
-			subscribes.add(new Subscribe(entity));
+			subscribes.add(SubscribeEntityHelper.toSubscribe(entity));
 		}
 
 		if (CollectionUtils.isEmpty(subscribes)) {
 			return Collections.emptyMap();
 		}
 
-		List<Key> feedIds = new ArrayList<>();
+		Set<Long> feedIds = new HashSet<>();
 		for (Subscribe subscribe : subscribes) {
-			for (Long feedId : subscribe.getFeeds()) {
-				feedIds.add(KeyFactory.createKey(FeedContent.class.getSimpleName(), feedId));
-			}
+			feedIds.addAll(subscribe.getFeeds());
 		}
 
-		Filter feedFilter = new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.IN, feedIds);
-		pq = datastore.prepare(new Query(FeedContent.class.getSimpleName()).setFilter(feedFilter));
+		List<Key> feedKeys = FeedContentEntityHelper.keys(feedIds);
+		Filter feedFilter = new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.IN, feedKeys);
+		pq = datastore.prepare(new Query(FeedContentEntityHelper.kind()).setFilter(feedFilter));
 
 		Map<Long, FeedContent> feedContents = new HashMap<>();
 		for (Entity entity : pq.asIterable()) {
-			FeedContent feed = new FeedContent(entity);
+			FeedContent feed = FeedContentEntityHelper.toFeedContent(entity);
 			feedContents.put(feed.getId(), feed);
 		}
 

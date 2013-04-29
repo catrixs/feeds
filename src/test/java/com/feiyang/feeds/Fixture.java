@@ -6,7 +6,9 @@ import java.util.List;
 
 import com.feiyang.feeds.model.Category;
 import com.feiyang.feeds.model.FeedContent;
+import com.feiyang.feeds.model.FeedContentEntityHelper;
 import com.feiyang.feeds.model.Subscribe;
+import com.feiyang.feeds.model.SubscribeEntityHelper;
 import com.feiyang.feeds.model.User;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Key;
@@ -42,11 +44,11 @@ public class Fixture {
 		keys.add(datastore.put(categoryFixture.toEntity()));
 
 		for (Subscribe iterable_element : subscirbeFixture) {
-			keys.add(datastore.put(iterable_element.toEntity()));
+			keys.add(datastore.put(SubscribeEntityHelper.toEntity(iterable_element)));
 		}
 
 		for (FeedContent iterable_element : feedFixture) {
-			keys.add(datastore.put(iterable_element.toEntity()));
+			keys.add(datastore.put(FeedContentEntityHelper.toEntity(iterable_element)));
 		}
 		System.err.println(keys);
 	}

@@ -21,15 +21,6 @@ public class Category {
 		this.subscribes = subscribes;
 	}
 
-	@SuppressWarnings("unchecked")
-	public Category(Entity entity) {
-		user = new User(entity.getParent().getId(), null);
-		categoryId = entity.getKey().getId();
-
-		name = entity.getProperty("name").toString();
-		subscribes = (List<Long>) entity.getProperty("subscribes");
-	}
-
 	public Entity toEntity() {
 		Key key = KeyFactory.createKey(KeyFactory.createKey(User.class.getSimpleName(), user.getUid()),
 				Category.class.getSimpleName(), categoryId);

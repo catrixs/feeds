@@ -2,10 +2,6 @@ package com.feiyang.feeds.model;
 
 import java.util.List;
 
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
 /**
  * <p>
  * user's subscribe feed site.
@@ -29,14 +25,6 @@ public class Subscribe {
 		this.site = site;
 		this.uid = uid;
 		this.feeds = feeds;
-	}
-
-	@SuppressWarnings("unchecked")
-	public Subscribe(Entity entity) {
-		id = entity.getKey().getId();
-		site = entity.getProperty("site").toString();
-		uid = (long) entity.getProperty("uid");
-		feeds = (List<Long>) entity.getProperty("feeds");
 	}
 
 	public long getUid() {
@@ -69,16 +57,6 @@ public class Subscribe {
 
 	public void setFeeds(List<Long> feeds) {
 		this.feeds = feeds;
-	}
-
-	public Entity toEntity() {
-		Key key = KeyFactory.createKey(Subscribe.class.getSimpleName(), id);
-		Entity entity = new Entity(key);
-		entity.setProperty("site", site);
-
-		entity.setUnindexedProperty("uid", uid);
-		entity.setUnindexedProperty("feeds", feeds);
-		return entity;
 	}
 
 	@Override
