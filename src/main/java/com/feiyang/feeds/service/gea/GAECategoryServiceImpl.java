@@ -1,4 +1,4 @@
-package com.feiyang.feeds.service;
+package com.feiyang.feeds.service.gea;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +18,8 @@ import com.feiyang.feeds.model.Subscribe;
 import com.feiyang.feeds.model.SubscribeEntityHelper;
 import com.feiyang.feeds.model.User;
 import com.feiyang.feeds.model.UserEntityHelper;
+import com.feiyang.feeds.service.CategoryService;
+import com.feiyang.feeds.service.FeedContentService;
 import com.feiyang.feeds.util.SimpleUuidService;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;

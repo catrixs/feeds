@@ -91,6 +91,7 @@ public class CrawlerServiceImp implements CrawlerService {
 			List<FeedContent> contents = listener.crawledContent;
 
 			// save content to storage.
+			feedContentService.saveConent(contents);
 			return contents;
 		} catch (IOException | FeedParserException e) {
 			// TODO need some recovery mechanism.

@@ -22,7 +22,7 @@ public interface FeedContentService {
 	 * store again.</li>
 	 * 
 	 * @param contents
-	 * @return
+	 * @return exclude already stored.
 	 */
 	List<FeedContent> saveConent(List<FeedContent> contents);
 }

@@ -1,4 +1,4 @@
-package com.feiyang.feeds.service;
+package com.feiyang.feeds.service.gea;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 
 import com.feiyang.feeds.model.FeedContent;
 import com.feiyang.feeds.model.FeedContentEntityHelper;
+import com.feiyang.feeds.service.FeedContentService;
 import com.feiyang.feeds.util.FeedUuidService;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -81,6 +82,6 @@ public class GAEFeedContentServiceImpl implements FeedContentService {
 			toBeStoredEntities.add(FeedContentEntityHelper.toEntity(feedContent));
 		}
 		datastore.put(toBeStoredEntities);
-		return contents;
+		return feedContents;
 	}
 }
