@@ -39,4 +39,9 @@ public class GAEFeedContentServiceImpl implements FeedContentService {
 		}
 		return rs;
 	}
+
+	@Override
+	public List<FeedContent> saveConent(List<FeedContent> contents) {
+		return null;
+	}
 }

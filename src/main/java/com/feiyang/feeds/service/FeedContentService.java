@@ -14,4 +14,6 @@ public interface FeedContentService {
 	 * @return
 	 */
 	List<FeedContent> latestContent(String site, int limit);
+
+	List<FeedContent> saveConent(List<FeedContent> contents);
 }

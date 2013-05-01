@@ -1,6 +1,7 @@
 package com.feiyang.feeds.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -17,6 +18,7 @@ import com.feiyang.feeds.model.FeedContent;
 import com.feiyang.feeds.model.Subscribe;
 import com.feiyang.feeds.model.SubscribeEntityHelper;
 import com.feiyang.feeds.model.User;
+import com.feiyang.feeds.model.UserEntityHelper;
 import com.feiyang.feeds.util.UuidGenerator;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -41,7 +43,7 @@ public class GAECategoryServiceImpl implements CategoryService {
 	private FeedContentService feedContentService;
 
 	@Override
-	public boolean createCategory(User user, String name) {
+	public Category createCategory(User user, String name) {
 		if (StringUtils.isEmpty(name)) {
 			throw new IllegalArgumentException(String.format("category name=%s", name));
 		}
@@ -53,7 +55,7 @@ public class GAECategoryServiceImpl implements CategoryService {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug(String.format("user create category:%s", key));
 		}
-		return true;
+		return category;
 	}
 
 	@Override
@@ -87,6 +89,7 @@ public class GAECategoryServiceImpl implements CategoryService {
 			if (subscribes == null) {
 				subscribes = new ArrayList<>();
 				subscribes.add(subscribe.getId());
+				category.setSubscribes(subscribes);
 			}
 			datastore.put(CategoryEntityHelper.toEntity(category));
 		} else {
@@ -94,9 +97,19 @@ public class GAECategoryServiceImpl implements CategoryService {
 					category.getName(), site));
 		}
 
-		Map<Subscribe, List<FeedContent>> rs = new TreeMap<>();
+		Map<Subscribe, List<FeedContent>> rs = new HashMap<>();
 		rs.put(subscribe, contents);
 		return rs;
+	}
+
+	@Override
+	public Category queryCategory(User user, String name) {
+		// query category.
+		Key userKeyFilter = UserEntityHelper.key(user.getUid());
+		PreparedQuery pq = datastore.prepare(new Query(CategoryEntityHelper.kind()).setAncestor(userKeyFilter)
+				.setFilter(new FilterPredicate("name", FilterOperator.EQUAL, name)));
+		Entity entity = pq.asSingleEntity();
+		return CategoryEntityHelper.toCategory(entity);
 	}
 
 	private Category queryCategory(User user, long categoryId) {
@@ -104,11 +117,6 @@ public class GAECategoryServiceImpl implements CategoryService {
 		Key categoryFilterKey = CategoryEntityHelper.key(user.getUid(), categoryId);
 		PreparedQuery pq = datastore.prepare(new Query(categoryFilterKey));
 		Entity entity = pq.asSingleEntity();
-		if (entity == null) {
-			// TODO should define own exception.
-			return null;
-		}
-
 		Category category = CategoryEntityHelper.toCategory(entity);
 		return category;
 	}
@@ -121,8 +129,16 @@ public class GAECategoryServiceImpl implements CategoryService {
 		List<Key> keys = SubscribeEntityHelper.keys(category.getSubscribes());
 		Filter keyFilter = new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.IN, keys);
 		Filter filter = CompositeFilterOperator.and(keyFilter, new FilterPredicate("site", FilterOperator.EQUAL, site));
-		PreparedQuery pq = datastore.prepare(new Query(SubscribeEntityHelper.kind()).setFilter(filter).setKeysOnly());
+		PreparedQuery pq = datastore.prepare(new Query(SubscribeEntityHelper.kind()).setFilter(filter));
 		Entity entity = pq.asSingleEntity();
 		return SubscribeEntityHelper.toSubscribe(entity);
+	}
+
+	public FeedContentService getFeedContentService() {
+		return feedContentService;
+	}
+
+	public void setFeedContentService(FeedContentService feedContentService) {
+		this.feedContentService = feedContentService;
 	}
 }

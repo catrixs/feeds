@@ -17,6 +17,10 @@ public abstract class CategoryEntityHelper {
 	}
 
 	public static Category toCategory(Entity entity) {
+		if (entity == null) {
+			return null;
+		}
+
 		User user = new User(entity.getParent().getId(), "");
 		long categoryId = entity.getKey().getId();
 		String name = entity.getProperty("name").toString();
@@ -27,10 +31,15 @@ public abstract class CategoryEntityHelper {
 	}
 
 	public static Entity toEntity(Category category) {
+		if (category == null) {
+			return null;
+		}
+
 		Key key = key(category.getUser().getUid(), category.getCategoryId());
 		Entity entity = new Entity(key);
 		entity.setProperty("name", category.getName());
-		entity.setProperty("subscribes", category.getSubscribes());
+
+		entity.setUnindexedProperty("subscribes", category.getSubscribes());
 		return entity;
 	}
 }

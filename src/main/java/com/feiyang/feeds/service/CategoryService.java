@@ -3,6 +3,7 @@ package com.feiyang.feeds.service;
 import java.util.List;
 import java.util.Map;
 
+import com.feiyang.feeds.model.Category;
 import com.feiyang.feeds.model.FeedContent;
 import com.feiyang.feeds.model.Subscribe;
 import com.feiyang.feeds.model.User;
@@ -14,7 +15,16 @@ public interface CategoryService {
 	 * @param category
 	 * @return
 	 */
-	boolean createCategory(User user, String name);
+	Category createCategory(User user, String name);
+
+	/**
+	 * query the category from the storage.
+	 * 
+	 * @param user
+	 * @param name
+	 * @return
+	 */
+	Category queryCategory(User user, String name);
 
 	/**
 	 * add new site to a category and crawl this site to the storage, return
