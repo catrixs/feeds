@@ -16,19 +16,28 @@ import org.apache.commons.feedparser.FeedParserState;
 import org.apache.commons.feedparser.network.ResourceRequest;
 import org.apache.commons.feedparser.network.ResourceRequestFactory;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.feiyang.feeds.model.FeedContent;
-import com.feiyang.feeds.util.UuidGenerator;
 
 @Component
 public class CrawlerServiceImp implements CrawlerService {
 	private static final Logger LOG = Logger.getLogger(CrawlerService.class);
 
+	@Autowired(required = true)
+	private FeedContentService feedContentService;
+
 	private static class FeedParserListener extends DefaultFeedParserListener {
 		private List<FeedContent> crawledContent;
 		private String site;
-		private Calendar calendar;
+
+		private String link;
+		private String title;
+		private String description;
+		private String category;
+		private String author;
+		private Calendar pubDate;
 
 		public FeedParserListener() {
 			crawledContent = new ArrayList<>();
@@ -37,33 +46,64 @@ public class CrawlerServiceImp implements CrawlerService {
 		@Override
 		public void onChannel(FeedParserState state, String title, String link, String description)
 				throws FeedParserException {
-			site = title;
+			site = link;
 		}
 
 		public void onItem(FeedParserState state, String title, String link, String description, String permalink)
 				throws FeedParserException {
-			crawledContent.add(new FeedContent(UuidGenerator.INSTANCE.next(), site, title, link, description));
+			this.title = title;
+			this.link = link;
+			this.description = description;
 		}
 
 		public void onCreated(FeedParserState state, Date date) throws FeedParserException {
-			calendar = Calendar.getInstance();
-			calendar.setTime(date);
+			pubDate = Calendar.getInstance();
+			pubDate.setTime(date);
+		}
+
+		@Override
+		public void onItemEnd() throws FeedParserException {
+			crawledContent.add(new FeedContent(0L, site, link, title, description, category, author, pubDate));
+			this.link = null;
+			this.title = null;
+			this.description = null;
+			this.category = null;
+			this.author = null;
+			this.pubDate = null;
+		}
+
+		@Override
+		public void onAuthor(FeedParserState state, String name, String email, String resource)
+				throws FeedParserException {
+			this.author = name;
 		}
 	}
 
 	@Override
 	public List<FeedContent> crawl(String site) {
 		try {
+			// crawl the rss site.
 			ResourceRequest request = ResourceRequestFactory.getResourceRequest(site);
 			InputStream is = request.getInputStream();
 			FeedParserListener listener = new FeedParserListener();
 			FeedParser parser = FeedParserFactory.newFeedParser();
 			parser.parse(listener, is, site);
-			return listener.crawledContent;
+			List<FeedContent> contents = listener.crawledContent;
+
+			// save content to storage.
+			return contents;
 		} catch (IOException | FeedParserException e) {
 			// TODO need some recovery mechanism.
 			LOG.error(String.format("crawl site(%s) error:", site), e);
 			return Collections.emptyList();
 		}
+	}
+
+	public FeedContentService getFeedContentService() {
+		return feedContentService;
+	}
+
+	public void setFeedContentService(FeedContentService feedContentService) {
+		this.feedContentService = feedContentService;
 	}
 }

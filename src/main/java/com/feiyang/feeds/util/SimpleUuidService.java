@@ -11,11 +11,15 @@ package com.feiyang.feeds.util;
  * @author chenfei
  * 
  */
-public class SimpleUuidService {
+public abstract class SimpleUuidService {
 	private static final int TIMESTAMP_SHIFT = 12;
 	private static final long MAX_TICKET = 1L << TIMESTAMP_SHIFT;
 	private static volatile long ticket;
-	private static volatile long timestamp = System.currentTimeMillis() << TIMESTAMP_SHIFT;
+	/**
+	 * initial timestamp to now stamp + 1 in order to avoid duplicated key
+	 * collision because of restart.
+	 */
+	private static volatile long timestamp = (System.currentTimeMillis() << TIMESTAMP_SHIFT) + (1L << TIMESTAMP_SHIFT);
 
 	public static long next() {
 		if (ticket++ > MAX_TICKET) {

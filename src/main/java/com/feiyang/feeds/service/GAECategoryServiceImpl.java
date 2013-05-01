@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ import com.feiyang.feeds.model.Subscribe;
 import com.feiyang.feeds.model.SubscribeEntityHelper;
 import com.feiyang.feeds.model.User;
 import com.feiyang.feeds.model.UserEntityHelper;
-import com.feiyang.feeds.util.UuidGenerator;
+import com.feiyang.feeds.util.SimpleUuidService;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -48,7 +47,7 @@ public class GAECategoryServiceImpl implements CategoryService {
 			throw new IllegalArgumentException(String.format("category name=%s", name));
 		}
 
-		long categoryId = UuidGenerator.INSTANCE.next();
+		long categoryId = SimpleUuidService.next();
 		Category category = new Category(user, categoryId, name, null);
 		Entity entity = category.toEntity();
 		Key key = datastore.put(entity);
@@ -82,7 +81,7 @@ public class GAECategoryServiceImpl implements CategoryService {
 		Subscribe subscribe = checkAlreadySubscribed(category, site);
 		if (subscribe == null) {
 			// save the new subscribe to storage.
-			subscribe = new Subscribe(UuidGenerator.INSTANCE.next(), site, user.getUid(), feedIds);
+			subscribe = new Subscribe(SimpleUuidService.next(), site, user.getUid(), feedIds);
 			datastore.put(SubscribeEntityHelper.toEntity(subscribe));
 
 			List<Long> subscribes = category.getSubscribes();

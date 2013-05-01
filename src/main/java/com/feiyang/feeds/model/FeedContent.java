@@ -20,6 +20,10 @@ public class FeedContent {
 	private String author;
 	private Calendar pubDate;
 
+	public FeedContent() {
+
+	}
+
 	public FeedContent(long id, String site, String title, String link, String description) {
 		super();
 		this.id = id;
