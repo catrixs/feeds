@@ -45,11 +45,12 @@ public abstract class FeedContentEntityHelper {
 		Entity feedContentEntity = new Entity(feedKey);
 		feedContentEntity.setProperty("site", feedContent.getSite());
 		feedContentEntity.setProperty("link", feedContent.getLink());
-		feedContentEntity.setProperty("title", feedContent.getTitle());
-		feedContentEntity.setProperty("desc", new Text(feedContent.getDescription()));
-		feedContentEntity.setProperty("author", feedContent.getAuthor());
-		feedContentEntity.setProperty("pubDate", feedContent.getPubDate());
-		feedContentEntity.setProperty("category", feedContent.getCategory());
+		
+		feedContentEntity.setUnindexedProperty("title", feedContent.getTitle());
+		feedContentEntity.setUnindexedProperty("desc", new Text(feedContent.getDescription()));
+		feedContentEntity.setUnindexedProperty("author", feedContent.getAuthor());
+		feedContentEntity.setUnindexedProperty("pubDate", feedContent.getPubDate());
+		feedContentEntity.setUnindexedProperty("category", feedContent.getCategory());
 		return feedContentEntity;
 	}
 }
