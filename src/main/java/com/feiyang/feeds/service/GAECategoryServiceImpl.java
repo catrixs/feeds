@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.feiyang.feeds.model.Category;
@@ -20,7 +21,6 @@ import com.feiyang.feeds.util.UuidGenerator;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
@@ -30,10 +30,10 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 @Component
-public class GAEOperationServiceImpl implements OperationService {
+public class GAECategoryServiceImpl implements CategoryService {
 	private static final int NEW_SUBSCRIBE_MAX_CONTENT = 15;
 
-	private static final Logger LOG = Logger.getLogger(GAEOperationServiceImpl.class.getName());
+	private static final Logger LOG = Logger.getLogger(GAECategoryServiceImpl.class.getName());
 
 	private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
@@ -57,11 +57,49 @@ public class GAEOperationServiceImpl implements OperationService {
 	}
 
 	@Override
-	public Map<Subscribe, List<FeedContent>> addSubscribe(User user, long categoryId, String site) {
+	public Map<Subscribe, List<FeedContent>> subscribeNewSite(User user, long categoryId, String site) {
+		return null;
+	}
+
+	@Override
+	public Map<Subscribe, List<FeedContent>> subscribeAlreadySite(User user, long categoryId, String site) {
 		if (categoryId <= 0) {
 			throw new IllegalArgumentException(String.format("categoryId=%d, site=%s", categoryId, site));
 		}
 
+		Category category = queryCategory(user, categoryId);
+
+		// fetch latest feed content.
+		List<FeedContent> contents = feedContentService.latestContent(site, NEW_SUBSCRIBE_MAX_CONTENT);
+		List<Long> feedIds = new ArrayList<>(contents.size());
+		for (FeedContent feedContent : contents) {
+			feedIds.add(feedContent.getId());
+		}
+
+		// check this site already exists in category. if so, just return true;
+		Subscribe subscribe = checkAlreadySubscribed(category, site);
+		if (subscribe == null) {
+			// save the new subscribe to storage.
+			subscribe = new Subscribe(UuidGenerator.INSTANCE.next(), site, user.getUid(), feedIds);
+			datastore.put(SubscribeEntityHelper.toEntity(subscribe));
+
+			List<Long> subscribes = category.getSubscribes();
+			if (subscribes == null) {
+				subscribes = new ArrayList<>();
+				subscribes.add(subscribe.getId());
+			}
+			datastore.put(CategoryEntityHelper.toEntity(category));
+		} else {
+			LOG.info(String.format("user(%d) category(%s) has already subscribe site(%s)", user.getUid(),
+					category.getName(), site));
+		}
+
+		Map<Subscribe, List<FeedContent>> rs = new TreeMap<>();
+		rs.put(subscribe, contents);
+		return rs;
+	}
+
+	private Category queryCategory(User user, long categoryId) {
 		// query category.
 		Key categoryFilterKey = CategoryEntityHelper.key(user.getUid(), categoryId);
 		PreparedQuery pq = datastore.prepare(new Query(categoryFilterKey));
@@ -71,40 +109,20 @@ public class GAEOperationServiceImpl implements OperationService {
 			return null;
 		}
 
-		// check this site already exists in category. if so, just return true;
 		Category category = CategoryEntityHelper.toCategory(entity);
-		List<Long> subscribes = category.getSubscribes();
-		if (subscribes == null) {
-			subscribes = new ArrayList<>();
-			category.setSubscribes(subscribes);
-		} else if (checkAlreadySubscribed(category, site)) {
-			LOG.info(String.format("user(%d) category(%s) has already subscribe site(%s)", user.getUid(),
-					category.getName(), site));
+		return category;
+	}
+
+	private Subscribe checkAlreadySubscribed(Category category, String site) {
+		if (CollectionUtils.isEmpty(category.getSubscribes())) {
 			return null;
 		}
 
-		// fetch latest feed content.
-		List<FeedContent> contents = feedContentService.latestContent(site, NEW_SUBSCRIBE_MAX_CONTENT);
-		List<Long> feedIds = new ArrayList<>(contents.size());
-		for (FeedContent feedContent : contents) {
-			feedIds.add(feedContent.getId());
-		}
-
-		// save the new subscribe to storage.
-		Subscribe subscribe = new Subscribe(UuidGenerator.INSTANCE.next(), site, user.getUid(), feedIds);
-		datastore.put(SubscribeEntityHelper.toEntity(subscribe));
-
-		Map<Subscribe, List<FeedContent>> rs = new TreeMap<>();
-		rs.put(subscribe, contents);
-		return rs;
-	}
-
-	private boolean checkAlreadySubscribed(Category category, String site) {
 		List<Key> keys = SubscribeEntityHelper.keys(category.getSubscribes());
 		Filter keyFilter = new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.IN, keys);
 		Filter filter = CompositeFilterOperator.and(keyFilter, new FilterPredicate("site", FilterOperator.EQUAL, site));
 		PreparedQuery pq = datastore.prepare(new Query(SubscribeEntityHelper.kind()).setFilter(filter).setKeysOnly());
-		int count = pq.countEntities(FetchOptions.Builder.withLimit(1));
-		return count > 0;
+		Entity entity = pq.asSingleEntity();
+		return SubscribeEntityHelper.toSubscribe(entity);
 	}
 }

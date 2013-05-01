@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.feiyang.feeds.model.FeedContent;
@@ -25,9 +23,6 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 public class GAEFeedContentServiceImpl implements FeedContentService {
 	private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-	@Autowired(required = true)
-	private CrawlerService crawlerService;
-
 	@Override
 	public List<FeedContent> latestContent(String site, int limit) {
 		if (!StringUtils.hasText(site) || limit <= 0) {
@@ -38,25 +33,10 @@ public class GAEFeedContentServiceImpl implements FeedContentService {
 		PreparedQuery pq = datastore.prepare(new Query(FeedContentEntityHelper.kind()).setFilter(filterBySite));
 
 		List<Entity> entities = pq.asList(FetchOptions.Builder.withLimit(limit));
-		if (!CollectionUtils.isEmpty(entities)) {
-			List<FeedContent> rs = new ArrayList<>(entities.size());
-			for (Entity entity : entities) {
-				rs.add(FeedContentEntityHelper.toFeedContent(entity));
-			}
-			return rs;
-		} else {
-			// this site is new one, so we must crawl it first.
-			List<FeedContent> rs = crawlerService.crawl(site);
-
-			// TODO this save procedure need to be background.
-			List<Entity> toBeSaveContents = new ArrayList<>(rs.size());
-			for (FeedContent feedContent : rs) {
-				toBeSaveContents.add(FeedContentEntityHelper.toEntity(feedContent));
-			}
-			datastore.put(toBeSaveContents);
-
-			return rs;
+		List<FeedContent> rs = new ArrayList<>(entities.size());
+		for (Entity entity : entities) {
+			rs.add(FeedContentEntityHelper.toFeedContent(entity));
 		}
+		return rs;
 	}
-
 }
