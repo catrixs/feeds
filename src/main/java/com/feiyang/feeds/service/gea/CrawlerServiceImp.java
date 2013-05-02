@@ -3,7 +3,6 @@ package com.feiyang.feeds.service.gea;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -39,7 +38,7 @@ public class CrawlerServiceImp implements CrawlerService {
 		private String description;
 		private String category;
 		private String author;
-		private Calendar pubDate;
+		private Date pubDate;
 
 		public FeedParserListener() {
 			crawledContent = new ArrayList<>();
@@ -59,8 +58,7 @@ public class CrawlerServiceImp implements CrawlerService {
 		}
 
 		public void onCreated(FeedParserState state, Date date) throws FeedParserException {
-			pubDate = Calendar.getInstance();
-			pubDate.setTime(date);
+			pubDate = date;
 		}
 
 		@Override

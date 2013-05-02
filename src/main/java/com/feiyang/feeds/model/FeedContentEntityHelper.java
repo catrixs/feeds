@@ -1,8 +1,8 @@
 package com.feiyang.feeds.model;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import com.google.appengine.api.datastore.Entity;
@@ -35,7 +35,7 @@ public abstract class FeedContentEntityHelper {
 		String description = ((Text) entity.getProperty("desc")).getValue();
 		String category = (String) entity.getProperty("category");
 		String author = (String) entity.getProperty("author");
-		Calendar pubDate = (Calendar) entity.getProperty("pubDate");
+		Date pubDate = (Date) entity.getProperty("pubDate");
 		FeedContent content = new FeedContent(id, site, link, title, description, category, author, pubDate);
 		return content;
 	}
@@ -45,7 +45,7 @@ public abstract class FeedContentEntityHelper {
 		Entity feedContentEntity = new Entity(feedKey);
 		feedContentEntity.setProperty("site", feedContent.getSite());
 		feedContentEntity.setProperty("link", feedContent.getLink());
-		
+
 		feedContentEntity.setUnindexedProperty("title", feedContent.getTitle());
 		feedContentEntity.setUnindexedProperty("desc", new Text(feedContent.getDescription()));
 		feedContentEntity.setUnindexedProperty("author", feedContent.getAuthor());

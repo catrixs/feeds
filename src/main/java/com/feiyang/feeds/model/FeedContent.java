@@ -1,6 +1,7 @@
 package com.feiyang.feeds.model;
 
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Feed content archive.
@@ -18,7 +19,7 @@ public class FeedContent {
 
 	private String category;
 	private String author;
-	private Calendar pubDate;
+	private Date pubDate;
 
 	public FeedContent() {
 
@@ -34,7 +35,7 @@ public class FeedContent {
 	}
 
 	public FeedContent(long id, String site, String link, String title, String description, String category,
-			String author, Calendar pubDate) {
+			String author, Date pubDate) {
 		super();
 		this.id = id;
 		this.site = site;
@@ -86,11 +87,11 @@ public class FeedContent {
 		this.author = author;
 	}
 
-	public Calendar getPubDate() {
+	public Date getPubDate() {
 		return pubDate;
 	}
 
-	public void setPubDate(Calendar pubDate) {
+	public void setPubDate(Date pubDate) {
 		this.pubDate = pubDate;
 	}
 
