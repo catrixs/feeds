@@ -15,5 +15,11 @@ public interface SubscribeService {
 	 */
 	void updateUnread(List<FeedContent> contents);
 
+	/**
+	 * clear user's subscribe unread feed ids.
+	 * 
+	 * @param feedIds
+	 *            FeedContent contains id and site.
+	 */
 	void clearUnread(List<FeedContent> feedIds);
 }

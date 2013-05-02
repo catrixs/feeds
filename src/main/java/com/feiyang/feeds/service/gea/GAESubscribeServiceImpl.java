@@ -23,8 +23,6 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
-;
-
 public class GAESubscribeServiceImpl implements SubscribeService {
 	private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
