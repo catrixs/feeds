@@ -8,6 +8,8 @@ import java.util.List;
 import com.feiyang.feeds.model.Category;
 import com.feiyang.feeds.model.FeedContent;
 import com.feiyang.feeds.model.FeedContentEntityHelper;
+import com.feiyang.feeds.model.Site;
+import com.feiyang.feeds.model.SiteEntityHelper;
 import com.feiyang.feeds.model.Subscribe;
 import com.feiyang.feeds.model.SubscribeEntityHelper;
 import com.feiyang.feeds.model.User;
@@ -16,7 +18,6 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Key;
 
 public class Fixture {
-
 	public final User userFixture = new User(12345L, "test");
 	public final Category categoryFixture = new Category(userFixture, 12345L, "testCategory", Arrays.asList(1L, 2L, 3L,
 			4L, 5L));
@@ -33,6 +34,8 @@ public class Fixture {
 			new FeedContent(8L, "test_site_5", "title_8", "link_8", "desc_8"),
 			new FeedContent(9L, "test_site_5", "title_9", "link_9", "desc_9"),
 			new FeedContent(10L, "test_site_5", "title_10", "link_10", "desc_10") });
+
+	public final List<Site> siteFixture = new ArrayList<>();
 
 	private List<Key> keys;
 
@@ -54,6 +57,9 @@ public class Fixture {
 		subscirbeFixture.add(new Subscribe(5L, "test_site_5", userFixture.getUid(), Arrays.asList(it.next().getId(), it
 				.next().getId())));
 
+		for (int i = 1; i <= 5; i++) {
+			siteFixture.add(new Site("test_site_" + i));
+		}
 	}
 
 	public void setUp(DatastoreService datastore) {
@@ -67,6 +73,10 @@ public class Fixture {
 		for (FeedContent iterable_element : feedFixture) {
 			iterable_element.setId(FeedUuidService.id(iterable_element));
 			keys.add(datastore.put(FeedContentEntityHelper.toEntity(iterable_element)));
+		}
+
+		for (Site iterable_element : siteFixture) {
+			keys.add(datastore.put(SiteEntityHelper.toEntity(iterable_element)));
 		}
 		System.err.println(keys);
 	}
