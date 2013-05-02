@@ -1,4 +1,4 @@
-package com.feiyang.feeds.service;
+package com.feiyang.feeds.service.gea;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.feiyang.feeds.model.FeedContent;
+import com.feiyang.feeds.service.CrawlerService;
+import com.feiyang.feeds.service.FeedContentService;
 
 @Component
 public class CrawlerServiceImp implements CrawlerService {

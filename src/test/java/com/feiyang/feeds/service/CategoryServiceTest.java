@@ -17,8 +17,10 @@ import com.feiyang.feeds.Fixture;
 import com.feiyang.feeds.model.Category;
 import com.feiyang.feeds.model.FeedContent;
 import com.feiyang.feeds.model.Subscribe;
-import com.feiyang.feeds.service.gea.GAECategoryServiceImpl;
-import com.feiyang.feeds.service.gea.GAEFeedContentServiceImpl;
+import com.feiyang.feeds.service.gea.CategoryServiceImpl;
+import com.feiyang.feeds.service.gea.CrawlerServiceImp;
+import com.feiyang.feeds.service.gea.FeedContentServiceImpl;
+import com.feiyang.feeds.service.gea.SiteServiceImpl;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -32,13 +34,15 @@ public class CategoryServiceTest {
 
 	private Random rnd = new Random();
 
-	private CategoryService srv = new GAECategoryServiceImpl();
+	private CategoryService srv = new CategoryServiceImpl();
 
 	@Before
 	public void setUp() throws Exception {
 		helper.setUp();
 		fixture.setUp(DatastoreServiceFactory.getDatastoreService());
-		((GAECategoryServiceImpl) srv).setFeedContentService(new GAEFeedContentServiceImpl());
+		((CategoryServiceImpl) srv).setFeedContentService(new FeedContentServiceImpl());
+		((CategoryServiceImpl) srv).setCrawlerService(new CrawlerServiceImp());
+		((CategoryServiceImpl) srv).setSiteService(new SiteServiceImpl());
 	}
 
 	@After
@@ -68,7 +72,7 @@ public class CategoryServiceTest {
 
 		Category c = srv.createCategory(fixture.userFixture, categoryName);
 
-		Map<Subscribe, List<FeedContent>> actual = srv.subscribeAlreadySite(fixture.userFixture, c.getCategoryId(),
+		Map<Subscribe, List<FeedContent>> actual = srv.subscribeSite(fixture.userFixture, c.getCategoryId(),
 				fixture.feedFixture.iterator().next().getSite());
 		assertEquals(1, actual.size());
 		c = srv.queryCategory(fixture.userFixture, categoryName);
@@ -90,7 +94,7 @@ public class CategoryServiceTest {
 		}
 
 		// check for duplicate subscribe.
-		actual = srv.subscribeAlreadySite(fixture.userFixture, c.getCategoryId(), fixture.feedFixture.iterator().next()
+		actual = srv.subscribeSite(fixture.userFixture, c.getCategoryId(), fixture.feedFixture.iterator().next()
 				.getSite());
 		assertEquals(1, actual.size());
 		c = srv.queryCategory(fixture.userFixture, categoryName);

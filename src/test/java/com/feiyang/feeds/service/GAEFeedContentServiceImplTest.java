@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import com.feiyang.feeds.Fixture;
 import com.feiyang.feeds.model.FeedContent;
-import com.feiyang.feeds.service.gea.GAEFeedContentServiceImpl;
+import com.feiyang.feeds.service.gea.FeedContentServiceImpl;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -22,7 +22,7 @@ public class GAEFeedContentServiceImplTest {
 
 	private Fixture fixture = new Fixture();
 
-	private FeedContentService feedContentService = new GAEFeedContentServiceImpl();
+	private FeedContentService feedContentService = new FeedContentServiceImpl();
 
 	@Before
 	public void setUp() throws Exception {

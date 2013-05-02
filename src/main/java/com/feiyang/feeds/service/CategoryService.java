@@ -27,17 +27,6 @@ public interface CategoryService {
 	Category queryCategory(User user, String name);
 
 	/**
-	 * add new site to a category and crawl this site to the storage, return
-	 * this subscribe with latest feed content.
-	 * 
-	 * @param user
-	 * @param categoryId
-	 * @param site
-	 * @return
-	 */
-	Map<Subscribe, List<FeedContent>> subscribeNewSite(User user, long categoryId, String site);
-
-	/**
 	 * add a already crawled site to this category. just return the latest
 	 * content from the storage, doesn't crawl the site.
 	 * 
@@ -46,5 +35,5 @@ public interface CategoryService {
 	 * @param site
 	 * @return
 	 */
-	Map<Subscribe, List<FeedContent>> subscribeAlreadySite(User user, long categoryId, String site);
+	Map<Subscribe, List<FeedContent>> subscribeSite(User user, long categoryId, String site);
 }

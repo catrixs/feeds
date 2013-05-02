@@ -13,7 +13,8 @@ import org.springframework.util.StringUtils;
 
 import com.feiyang.feeds.Fixture;
 import com.feiyang.feeds.model.FeedContent;
-import com.feiyang.feeds.service.gea.GAEFeedContentServiceImpl;
+import com.feiyang.feeds.service.gea.CrawlerServiceImp;
+import com.feiyang.feeds.service.gea.FeedContentServiceImpl;
 import com.feiyang.feeds.util.FeedUuidService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -33,7 +34,7 @@ public class CrawlerServiceImpTest {
 		helper.setUp();
 		fixture.setUp(DatastoreServiceFactory.getDatastoreService());
 
-		((CrawlerServiceImp) crawlerService).setFeedContentService(new GAEFeedContentServiceImpl());
+		((CrawlerServiceImp) crawlerService).setFeedContentService(new FeedContentServiceImpl());
 	}
 
 	@After

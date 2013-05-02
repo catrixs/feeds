@@ -15,7 +15,7 @@ import com.feiyang.feeds.model.Category;
 import com.feiyang.feeds.model.FeedContent;
 import com.feiyang.feeds.model.Subscribe;
 import com.feiyang.feeds.service.FeedService;
-import com.feiyang.feeds.service.gea.GAEFeedServiceImpl;
+import com.feiyang.feeds.service.gea.FeedServiceImpl;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -41,7 +41,7 @@ public class GAEFeedServiceImplTest {
 
 	@Test
 	public void testShowCategory() {
-		FeedService service = new GAEFeedServiceImpl();
+		FeedService service = new FeedServiceImpl();
 		List<Category> categories = service.showCategory(fixture.userFixture.getUid());
 
 		assertEquals(1, categories.size());
@@ -53,7 +53,7 @@ public class GAEFeedServiceImplTest {
 
 	@Test
 	public void testCategoryFeeds() {
-		FeedService service = new GAEFeedServiceImpl();
+		FeedService service = new FeedServiceImpl();
 		List<Category> categories = service.showCategory(fixture.userFixture.getUid());
 		Category category = categories.iterator().next();
 		Map<Subscribe, List<FeedContent>> actual = service.categoryFeeds(category);

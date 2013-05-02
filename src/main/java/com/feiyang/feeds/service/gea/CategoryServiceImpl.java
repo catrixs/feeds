@@ -19,7 +19,9 @@ import com.feiyang.feeds.model.SubscribeEntityHelper;
 import com.feiyang.feeds.model.User;
 import com.feiyang.feeds.model.UserEntityHelper;
 import com.feiyang.feeds.service.CategoryService;
+import com.feiyang.feeds.service.CrawlerService;
 import com.feiyang.feeds.service.FeedContentService;
+import com.feiyang.feeds.service.SiteService;
 import com.feiyang.feeds.util.SimpleUuidService;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -33,15 +35,21 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 @Component
-public class GAECategoryServiceImpl implements CategoryService {
+public class CategoryServiceImpl implements CategoryService {
 	private static final int NEW_SUBSCRIBE_MAX_CONTENT = 15;
 
-	private static final Logger LOG = Logger.getLogger(GAECategoryServiceImpl.class.getName());
+	private static final Logger LOG = Logger.getLogger(CategoryServiceImpl.class.getName());
 
 	private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 	@Autowired(required = true)
 	private FeedContentService feedContentService;
+
+	@Autowired(required = true)
+	private CrawlerService crawlerService;
+
+	@Autowired(required = true)
+	private SiteService siteService;
 
 	@Override
 	public Category createCategory(User user, String name) {
@@ -60,12 +68,7 @@ public class GAECategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public Map<Subscribe, List<FeedContent>> subscribeNewSite(User user, long categoryId, String site) {
-		return null;
-	}
-
-	@Override
-	public Map<Subscribe, List<FeedContent>> subscribeAlreadySite(User user, long categoryId, String site) {
+	public Map<Subscribe, List<FeedContent>> subscribeSite(User user, long categoryId, String site) {
 		if (categoryId <= 0) {
 			throw new IllegalArgumentException(String.format("categoryId=%d, site=%s", categoryId, site));
 		}
@@ -73,8 +76,14 @@ public class GAECategoryServiceImpl implements CategoryService {
 		Category category = queryCategory(user, categoryId);
 
 		// fetch latest feed content.
-		List<FeedContent> contents = feedContentService.latestContent(site, NEW_SUBSCRIBE_MAX_CONTENT);
-		List<Long> feedIds = new ArrayList<>(contents.size());
+		List<FeedContent> contents = null;
+		boolean siteExist = siteService.subscribeSite(site);
+		if (siteExist) {
+			contents = crawlerService.crawl(site);
+		} else {
+			contents = feedContentService.latestContent(site, NEW_SUBSCRIBE_MAX_CONTENT);
+		}
+		List<Long> feedIds = new ArrayList<>();
 		for (FeedContent feedContent : contents) {
 			feedIds.add(feedContent.getId());
 		}
@@ -141,5 +150,21 @@ public class GAECategoryServiceImpl implements CategoryService {
 
 	public void setFeedContentService(FeedContentService feedContentService) {
 		this.feedContentService = feedContentService;
+	}
+
+	public CrawlerService getCrawlerService() {
+		return crawlerService;
+	}
+
+	public void setCrawlerService(CrawlerService crawlerService) {
+		this.crawlerService = crawlerService;
+	}
+
+	public SiteService getSiteService() {
+		return siteService;
+	}
+
+	public void setSiteService(SiteService siteService) {
+		this.siteService = siteService;
 	}
 }

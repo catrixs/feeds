@@ -26,7 +26,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 @Component
-public class GAEFeedContentServiceImpl implements FeedContentService {
+public class FeedContentServiceImpl implements FeedContentService {
 	private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 	@Override

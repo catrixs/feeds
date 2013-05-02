@@ -30,7 +30,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 @Component
-public class GAEFeedServiceImpl implements FeedService {
+public class FeedServiceImpl implements FeedService {
 	private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 	@Override
