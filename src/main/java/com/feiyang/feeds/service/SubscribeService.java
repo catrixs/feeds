@@ -1,5 +1,6 @@
 package com.feiyang.feeds.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.feiyang.feeds.model.Category;
@@ -30,6 +31,14 @@ public interface SubscribeService {
 	 * @return
 	 */
 	List<Subscribe> querySubscribes(Category category);
+
+	/**
+	 * query subscribes according subscribe ids.
+	 * 
+	 * @param subscribeIds
+	 * @return
+	 */
+	List<Subscribe> querySubscribes(Collection<Long> subscribeIds);
 
 	/**
 	 * registry a new site subscribe.

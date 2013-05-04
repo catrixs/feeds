@@ -1,6 +1,7 @@
 package com.feiyang.feeds.service.gea;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -35,6 +37,7 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
+@Component
 public class SubscribeServiceImpl implements SubscribeService {
 	private static final int NEW_SUBSCRIBE_MAX_CONTENT = 15;
 	private static final Logger LOG = Logger.getLogger(SubscribeServiceImpl.class.getName());
@@ -121,6 +124,19 @@ public class SubscribeServiceImpl implements SubscribeService {
 		}
 
 		List<Key> keys = SubscribeEntityHelper.keys(category.getSubscribes());
+		Filter keyFilter = new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.IN, keys);
+		PreparedQuery pq = datastore.prepare(new Query(SubscribeEntityHelper.kind()).setFilter(keyFilter));
+		List<Entity> entities = pq.asList(FetchOptions.Builder.withLimit(keys.size()));
+		return SubscribeEntityHelper.toSubscribe(entities);
+	}
+
+	@Override
+	public List<Subscribe> querySubscribes(Collection<Long> subscribeIds) {
+		if (CollectionUtils.isEmpty(subscribeIds)) {
+			return Collections.emptyList();
+		}
+
+		List<Key> keys = SubscribeEntityHelper.keys(subscribeIds);
 		Filter keyFilter = new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.IN, keys);
 		PreparedQuery pq = datastore.prepare(new Query(SubscribeEntityHelper.kind()).setFilter(keyFilter));
 		List<Entity> entities = pq.asList(FetchOptions.Builder.withLimit(keys.size()));

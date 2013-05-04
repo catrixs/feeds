@@ -1,6 +1,7 @@
 package com.feiyang.feeds.service.gea;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,6 +50,19 @@ public class FeedContentServiceImpl implements FeedContentService {
 			rs.add(FeedContentEntityHelper.toFeedContent(entity));
 		}
 		return rs;
+	}
+
+	@Override
+	public List<FeedContent> queryContent(Collection<Long> feedIds) {
+		if (CollectionUtils.isEmpty(feedIds)) {
+			return Collections.emptyList();
+		}
+
+		List<Key> keys = FeedContentEntityHelper.keys(feedIds);
+		Filter filter = new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.IN, keys);
+		PreparedQuery pq = datastore.prepare(new Query(FeedContentEntityHelper.kind()).setFilter(filter));
+		List<Entity> entities = pq.asList(FetchOptions.Builder.withLimit(keys.size()));
+		return FeedContentEntityHelper.toFeedContent(entities);
 	}
 
 	@Override

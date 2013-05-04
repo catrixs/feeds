@@ -16,13 +16,11 @@ import com.feiyang.feeds.model.User;
 import com.feiyang.feeds.service.CategoryService;
 import com.feiyang.feeds.service.CrawlerService;
 import com.feiyang.feeds.service.FeedContentService;
-import com.feiyang.feeds.service.FeedService;
 import com.feiyang.feeds.service.SiteService;
 import com.feiyang.feeds.service.SubscribeService;
 import com.feiyang.feeds.service.gea.CategoryServiceImpl;
 import com.feiyang.feeds.service.gea.CrawlerServiceImp;
 import com.feiyang.feeds.service.gea.FeedContentServiceImpl;
-import com.feiyang.feeds.service.gea.FeedServiceImpl;
 import com.feiyang.feeds.service.gea.SiteServiceImpl;
 import com.feiyang.feeds.service.gea.SubscribeServiceImpl;
 import com.feiyang.feeds.util.FeedUuidService;
@@ -52,7 +50,6 @@ public class Fixture {
 	public CategoryService categoryServiceFixture;
 	public CrawlerService crawlerServiceFixture;
 	public FeedContentService feedContentServiceFixture;
-	public FeedService feedServiceFixture;
 	public SubscribeService subscribeServiceFixture;
 	public SiteService siteServiceFixture;
 
@@ -79,6 +76,8 @@ public class Fixture {
 		for (int i = 1; i <= 5; i++) {
 			siteFixture.add(new Site("test_site_" + i));
 		}
+
+		categoryFixture.setScribes(subscirbeFixture);
 	}
 
 	public void setUp(DatastoreService datastore) {
@@ -101,7 +100,6 @@ public class Fixture {
 
 		categoryServiceFixture = new CategoryServiceImpl();
 		crawlerServiceFixture = new CrawlerServiceImp();
-		feedServiceFixture = new FeedServiceImpl();
 		siteServiceFixture = new SiteServiceImpl();
 		subscribeServiceFixture = new SubscribeServiceImpl();
 		feedContentServiceFixture = new FeedContentServiceImpl();

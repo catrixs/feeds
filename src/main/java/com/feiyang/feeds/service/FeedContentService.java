@@ -1,5 +1,6 @@
 package com.feiyang.feeds.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.feiyang.feeds.model.FeedContent;
@@ -15,6 +16,14 @@ public interface FeedContentService {
 	 * @return
 	 */
 	List<FeedContent> latestContent(String site, int limit);
+
+	/**
+	 * query feed content according to feed ids.
+	 * 
+	 * @param feedIds
+	 * @return
+	 */
+	List<FeedContent> queryContent(Collection<Long> feedIds);
 
 	/**
 	 * save the feed content to storage. <li>the feed content id will be reset

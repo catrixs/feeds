@@ -1,6 +1,7 @@
 package com.feiyang.feeds.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class SubscribeEntityHelper {
 		return KeyFactory.createKey(kind(), id);
 	}
 
-	public static List<Key> keys(List<Long> ids) {
+	public static List<Key> keys(Collection<Long> ids) {
 		if (CollectionUtils.isEmpty(ids)) {
 			return Collections.emptyList();
 		}
@@ -31,7 +32,7 @@ public class SubscribeEntityHelper {
 		return rs;
 	}
 
-	public static List<Subscribe> toSubscribe(List<Entity> entities) {
+	public static List<Subscribe> toSubscribe(Collection<Entity> entities) {
 		if (CollectionUtils.isEmpty(entities)) {
 			return Collections.emptyList();
 		}

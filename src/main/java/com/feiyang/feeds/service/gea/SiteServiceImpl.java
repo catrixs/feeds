@@ -1,5 +1,6 @@
 package com.feiyang.feeds.service.gea;
 
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.feiyang.feeds.model.Site;
@@ -11,6 +12,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 
+@Component
 public class SiteServiceImpl implements SiteService {
 	private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 

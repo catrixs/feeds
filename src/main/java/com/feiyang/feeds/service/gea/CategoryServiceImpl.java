@@ -83,6 +83,17 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
+	public List<Category> queryCategory(User user) {
+		Key userKeyFilter = UserEntityHelper.key(user.getUid());
+		PreparedQuery pq = datastore.prepare(new Query(CategoryEntityHelper.kind()).setAncestor(userKeyFilter));
+		List<Category> rs = new ArrayList<>();
+		for (Entity entity : pq.asIterable()) {
+			rs.add(CategoryEntityHelper.toCategory(entity));
+		}
+		return rs;
+	}
+
+	@Override
 	public Category subscribeSite(User user, long categoryId, String site) {
 		if (user == null || user.getUid() <= 0 || !StringUtils.hasText(site)) {
 			throw new IllegalArgumentException(String.format("illegal user or site to subscribe:user=%s, site=%s",

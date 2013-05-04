@@ -2,8 +2,11 @@ package com.feiyang.feeds.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.util.CollectionUtils;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -23,6 +26,18 @@ public abstract class FeedContentEntityHelper {
 		List<Key> rs = new ArrayList<>();
 		for (Long id : ids) {
 			rs.add(key(id));
+		}
+		return rs;
+	}
+
+	public static List<FeedContent> toFeedContent(List<Entity> entities) {
+		if (CollectionUtils.isEmpty(entities)) {
+			return Collections.emptyList();
+		}
+
+		List<FeedContent> rs = new ArrayList<>(entities.size());
+		for (Entity entity : entities) {
+			rs.add(toFeedContent(entity));
 		}
 		return rs;
 	}
