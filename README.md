@@ -24,3 +24,10 @@ Then open browser with URL http://localhost:8080/feed/categories.json
 To see all the available goals for the App Engine plugin, run
 
     mvn help:describe -Dplugin=appengine
+    
+Quick Start
+
+	http://localhost:8080/registry.json?name=test
+	http://localhost:8888/category/create.json?uid=${uid}&name=testcategory
+	http://localhost:8888/category/subscribe.json?uid=${uid}&cid=${categoryId}&site=http://www.huxiu.com/rss/0.xml
+	http://localhost:8888/view/home.json?uid=${uid}
