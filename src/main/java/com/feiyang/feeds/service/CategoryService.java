@@ -18,6 +18,15 @@ public interface CategoryService {
 	 * query the category from the storage.
 	 * 
 	 * @param user
+	 * @param categoryId
+	 * @return
+	 */
+	Category queryCategory(User user, long categoryId);
+
+	/**
+	 * query the category from the storage.
+	 * 
+	 * @param user
 	 * @param name
 	 * @return
 	 */

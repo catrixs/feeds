@@ -121,7 +121,8 @@ public class CategoryServiceImpl implements CategoryService {
 		return category;
 	}
 
-	private Category queryCategory(User user, long categoryId) {
+	@Override
+	public Category queryCategory(User user, long categoryId) {
 		// query category.
 		Key categoryFilterKey = CategoryEntityHelper.key(user.getUid(), categoryId);
 		PreparedQuery pq = datastore.prepare(new Query(categoryFilterKey));

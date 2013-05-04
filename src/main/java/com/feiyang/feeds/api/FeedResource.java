@@ -43,7 +43,7 @@ public class FeedResource {
 
 	@GET
 	@Path("/home.json")
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces(MediaType.APPLICATION_JSON + "; charset=utf-8")
 	public String home(@QueryParam(value = "uid") long uid) throws JSONException {
 		if (uid <= 0) {
 			throw new IllegalArgumentException(String.format("[home.json] illegal uid:uid=%d", uid));
@@ -97,6 +97,7 @@ public class FeedResource {
 							unreadContents = new ArrayList<>();
 							subscribe.setContents(unreadContents);
 						}
+						unreadContents.add(unreadContent);
 					}
 				}
 			}

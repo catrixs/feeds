@@ -27,7 +27,7 @@ public class CategoryResource {
 
 	@GET
 	@Path("/create.json")
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON + "; charset=utf-8" })
 	public String createCategory(@QueryParam(value = "uid") long uid, @QueryParam(value = "name") String name)
 			throws JSONException {
 		if (!StringUtils.hasText(name)) {
@@ -44,5 +44,29 @@ public class CategoryResource {
 
 		Category category = categoryService.createCategory(user, name);
 		return CategoryJson.toJson(category).toString();
+	}
+
+	@GET
+	@Path("/subscribe.json")
+	@Produces({ MediaType.APPLICATION_JSON + "; charset=utf-8" })
+	public String subscribe(@QueryParam(value = "uid") long uid, @QueryParam(value = "cid") long categoryId,
+			@QueryParam(value = "site") String site) throws JSONException {
+		if (uid <= 0) {
+			return "illegal uid=" + uid;
+		}
+		if (categoryId <= 0) {
+			return "illegal category id=" + uid;
+		}
+		if (!StringUtils.hasText(site)) {
+			return "illegal site=" + site;
+		}
+
+		User user = userService.queryUser(uid);
+		if (user == null) {
+			return "no user which uid=" + uid;
+		}
+
+		Category c = categoryService.subscribeSite(user, categoryId, site);
+		return CategoryJson.toJson(c).toString();
 	}
 }
