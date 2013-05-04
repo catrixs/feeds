@@ -13,6 +13,18 @@ import com.feiyang.feeds.model.SiteEntityHelper;
 import com.feiyang.feeds.model.Subscribe;
 import com.feiyang.feeds.model.SubscribeEntityHelper;
 import com.feiyang.feeds.model.User;
+import com.feiyang.feeds.service.CategoryService;
+import com.feiyang.feeds.service.CrawlerService;
+import com.feiyang.feeds.service.FeedContentService;
+import com.feiyang.feeds.service.FeedService;
+import com.feiyang.feeds.service.SiteService;
+import com.feiyang.feeds.service.SubscribeService;
+import com.feiyang.feeds.service.gea.CategoryServiceImpl;
+import com.feiyang.feeds.service.gea.CrawlerServiceImp;
+import com.feiyang.feeds.service.gea.FeedContentServiceImpl;
+import com.feiyang.feeds.service.gea.FeedServiceImpl;
+import com.feiyang.feeds.service.gea.SiteServiceImpl;
+import com.feiyang.feeds.service.gea.SubscribeServiceImpl;
 import com.feiyang.feeds.util.FeedUuidService;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Key;
@@ -36,6 +48,13 @@ public class Fixture {
 			new FeedContent(10L, "test_site_5", "title_10", "link_10", "desc_10") });
 
 	public final List<Site> siteFixture = new ArrayList<>();
+
+	public CategoryService categoryServiceFixture;
+	public CrawlerService crawlerServiceFixture;
+	public FeedContentService feedContentServiceFixture;
+	public FeedService feedServiceFixture;
+	public SubscribeService subscribeServiceFixture;
+	public SiteService siteServiceFixture;
 
 	private List<Key> keys;
 
@@ -79,6 +98,25 @@ public class Fixture {
 			keys.add(datastore.put(SiteEntityHelper.toEntity(iterable_element)));
 		}
 		System.err.println(keys);
+
+		categoryServiceFixture = new CategoryServiceImpl();
+		crawlerServiceFixture = new CrawlerServiceImp();
+		feedServiceFixture = new FeedServiceImpl();
+		siteServiceFixture = new SiteServiceImpl();
+		subscribeServiceFixture = new SubscribeServiceImpl();
+		feedContentServiceFixture = new FeedContentServiceImpl();
+
+		((CategoryServiceImpl) categoryServiceFixture).setCrawlerService(crawlerServiceFixture);
+		((CategoryServiceImpl) categoryServiceFixture).setFeedContentService(feedContentServiceFixture);
+		((CategoryServiceImpl) categoryServiceFixture).setSiteService(siteServiceFixture);
+		((CategoryServiceImpl) categoryServiceFixture).setSubscribeService(subscribeServiceFixture);
+
+		((CrawlerServiceImp) crawlerServiceFixture).setFeedContentService(feedContentServiceFixture);
+		((CrawlerServiceImp) crawlerServiceFixture).setSubscribeService(subscribeServiceFixture);
+
+		((SubscribeServiceImpl) subscribeServiceFixture).setCrawlerService(crawlerServiceFixture);
+		((SubscribeServiceImpl) subscribeServiceFixture).setFeedContentService(feedContentServiceFixture);
+		((SubscribeServiceImpl) subscribeServiceFixture).setSiteService(siteServiceFixture);
 	}
 
 	public void tearDown(DatastoreService datastore) {

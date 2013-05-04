@@ -2,8 +2,10 @@ package com.feiyang.feeds.service;
 
 import java.util.List;
 
+import com.feiyang.feeds.model.Category;
 import com.feiyang.feeds.model.FeedContent;
 import com.feiyang.feeds.model.Subscribe;
+import com.feiyang.feeds.model.User;
 
 public interface SubscribeService {
 	/**
@@ -21,5 +23,21 @@ public interface SubscribeService {
 	 * @param feedIds
 	 *            FeedContent contains id and site.
 	 */
-	void clearUnread(List<FeedContent> feedIds);
+	void clearUnread(long subscribeId, List<FeedContent> feedIds);
+
+	/**
+	 * @param category
+	 * @return
+	 */
+	List<Subscribe> querySubscribes(Category category);
+
+	/**
+	 * registry a new site subscribe.
+	 * 
+	 * @param user
+	 * @param category
+	 * @param site
+	 * @return
+	 */
+	Subscribe subscribeSite(User user, Category category, String site);
 }

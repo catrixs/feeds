@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import com.feiyang.feeds.model.FeedContent;
 import com.feiyang.feeds.service.CrawlerService;
 import com.feiyang.feeds.service.FeedContentService;
+import com.feiyang.feeds.service.SubscribeService;
 
 @Component
 public class CrawlerServiceImp implements CrawlerService {
@@ -28,6 +29,9 @@ public class CrawlerServiceImp implements CrawlerService {
 
 	@Autowired(required = true)
 	private FeedContentService feedContentService;
+
+	@Autowired(required = true)
+	private SubscribeService subscribeService;
 
 	private static class FeedParserListener extends DefaultFeedParserListener {
 		private List<FeedContent> crawledContent;
@@ -91,7 +95,11 @@ public class CrawlerServiceImp implements CrawlerService {
 			List<FeedContent> contents = listener.crawledContent;
 
 			// save content to storage.
-			feedContentService.saveConent(contents);
+			contents = feedContentService.saveConent(contents);
+
+			// update unread.
+			subscribeService.updateUnread(contents);
+
 			return contents;
 		} catch (IOException | FeedParserException e) {
 			// TODO need some recovery mechanism.
@@ -106,5 +114,13 @@ public class CrawlerServiceImp implements CrawlerService {
 
 	public void setFeedContentService(FeedContentService feedContentService) {
 		this.feedContentService = feedContentService;
+	}
+
+	public SubscribeService getSubscribeService() {
+		return subscribeService;
+	}
+
+	public void setSubscribeService(SubscribeService subscribeService) {
+		this.subscribeService = subscribeService;
 	}
 }

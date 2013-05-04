@@ -1,6 +1,7 @@
 package com.feiyang.feeds.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.List;
@@ -13,8 +14,6 @@ import org.springframework.util.StringUtils;
 
 import com.feiyang.feeds.Fixture;
 import com.feiyang.feeds.model.FeedContent;
-import com.feiyang.feeds.service.gea.CrawlerServiceImp;
-import com.feiyang.feeds.service.gea.FeedContentServiceImpl;
 import com.feiyang.feeds.util.FeedUuidService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -27,14 +26,10 @@ public class CrawlerServiceImpTest {
 
 	private Fixture fixture = new Fixture();
 
-	private CrawlerService crawlerService = new CrawlerServiceImp();
-
 	@Before
 	public void setUp() throws Exception {
 		helper.setUp();
 		fixture.setUp(DatastoreServiceFactory.getDatastoreService());
-
-		((CrawlerServiceImp) crawlerService).setFeedContentService(new FeedContentServiceImpl());
 	}
 
 	@After
@@ -44,7 +39,7 @@ public class CrawlerServiceImpTest {
 
 	@Test
 	public void testCrawl() {
-		List<FeedContent> contents = crawlerService.crawl("http://www.huxiu.com/rss/0.xml");
+		List<FeedContent> contents = fixture.crawlerServiceFixture.crawl("http://www.huxiu.com/rss/0.xml");
 		Set<Long> set = new HashSet<>();
 		for (FeedContent feedContent : contents) {
 			System.err.println(feedContent);

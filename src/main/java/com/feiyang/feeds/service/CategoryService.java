@@ -1,11 +1,6 @@
 package com.feiyang.feeds.service;
 
-import java.util.List;
-import java.util.Map;
-
 import com.feiyang.feeds.model.Category;
-import com.feiyang.feeds.model.FeedContent;
-import com.feiyang.feeds.model.Subscribe;
 import com.feiyang.feeds.model.User;
 
 public interface CategoryService {
@@ -27,13 +22,12 @@ public interface CategoryService {
 	Category queryCategory(User user, String name);
 
 	/**
-	 * add a already crawled site to this category. just return the latest
-	 * content from the storage, doesn't crawl the site.
+	 * subscribe a site under a category.
 	 * 
 	 * @param user
 	 * @param categoryId
 	 * @param site
-	 * @return
+	 * @return the category with created Subscribe with the latest content.
 	 */
-	Map<Subscribe, List<FeedContent>> subscribeSite(User user, long categoryId, String site);
+	Category subscribeSite(User user, long categoryId, String site);
 }

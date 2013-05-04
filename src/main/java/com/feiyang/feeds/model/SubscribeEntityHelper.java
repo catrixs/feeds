@@ -15,6 +15,10 @@ public class SubscribeEntityHelper {
 		return Subscribe.class.getSimpleName();
 	}
 
+	public static Key key(long id) {
+		return KeyFactory.createKey(kind(), id);
+	}
+
 	public static List<Key> keys(List<Long> ids) {
 		if (CollectionUtils.isEmpty(ids)) {
 			return Collections.emptyList();
@@ -22,7 +26,19 @@ public class SubscribeEntityHelper {
 
 		List<Key> rs = new ArrayList<>(ids.size());
 		for (Long id : ids) {
-			rs.add(KeyFactory.createKey(kind(), id));
+			rs.add(key(id));
+		}
+		return rs;
+	}
+
+	public static List<Subscribe> toSubscribe(List<Entity> entities) {
+		if (CollectionUtils.isEmpty(entities)) {
+			return Collections.emptyList();
+		}
+
+		List<Subscribe> rs = new ArrayList<>(entities.size());
+		for (Entity entity : entities) {
+			rs.add(toSubscribe(entity));
 		}
 		return rs;
 	}
@@ -38,6 +54,10 @@ public class SubscribeEntityHelper {
 	}
 
 	public static Subscribe toSubscribe(Entity entity) {
+		if (entity == null) {
+			return null;
+		}
+
 		long id = entity.getKey().getId();
 		String site = entity.getProperty("site").toString();
 		long uid = (long) entity.getProperty("uid");

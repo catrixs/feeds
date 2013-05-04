@@ -20,6 +20,8 @@ public class Subscribe {
 	private long uid;
 	private List<Long> feeds;
 
+	private transient List<FeedContent> contents;
+
 	public Subscribe(long id, String site, long uid, List<Long> feeds) {
 		this.id = id;
 		this.site = site;
@@ -57,6 +59,14 @@ public class Subscribe {
 
 	public void setFeeds(List<Long> feeds) {
 		this.feeds = feeds;
+	}
+
+	public List<FeedContent> getContents() {
+		return contents;
+	}
+
+	public void setContents(List<FeedContent> contents) {
+		this.contents = contents;
 	}
 
 	@Override

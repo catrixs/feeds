@@ -1,6 +1,7 @@
 package com.feiyang.feeds.service;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,6 @@ import com.feiyang.feeds.Fixture;
 import com.feiyang.feeds.model.Category;
 import com.feiyang.feeds.model.FeedContent;
 import com.feiyang.feeds.model.Subscribe;
-import com.feiyang.feeds.service.FeedService;
 import com.feiyang.feeds.service.gea.FeedServiceImpl;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -26,6 +26,7 @@ public class GAEFeedServiceImplTest {
 			new LocalDatastoreServiceTestConfig());
 
 	private Fixture fixture = new Fixture();
+	
 
 	@Before
 	public void setUp() throws Exception {

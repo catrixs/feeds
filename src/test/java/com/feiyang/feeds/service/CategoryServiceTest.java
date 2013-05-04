@@ -1,13 +1,11 @@
 package com.feiyang.feeds.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -17,10 +15,6 @@ import com.feiyang.feeds.Fixture;
 import com.feiyang.feeds.model.Category;
 import com.feiyang.feeds.model.FeedContent;
 import com.feiyang.feeds.model.Subscribe;
-import com.feiyang.feeds.service.gea.CategoryServiceImpl;
-import com.feiyang.feeds.service.gea.CrawlerServiceImp;
-import com.feiyang.feeds.service.gea.FeedContentServiceImpl;
-import com.feiyang.feeds.service.gea.SiteServiceImpl;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -34,15 +28,10 @@ public class CategoryServiceTest {
 
 	private Random rnd = new Random();
 
-	private CategoryService srv = new CategoryServiceImpl();
-
 	@Before
 	public void setUp() throws Exception {
 		helper.setUp();
 		fixture.setUp(DatastoreServiceFactory.getDatastoreService());
-		((CategoryServiceImpl) srv).setFeedContentService(new FeedContentServiceImpl());
-		((CategoryServiceImpl) srv).setCrawlerService(new CrawlerServiceImp());
-		((CategoryServiceImpl) srv).setSiteService(new SiteServiceImpl());
 	}
 
 	@After
@@ -55,7 +44,7 @@ public class CategoryServiceTest {
 	public void testCreateCategory() {
 		String categoryName = rnd.nextDouble() + "";
 
-		Category actual = srv.createCategory(fixture.userFixture, categoryName);
+		Category actual = fixture.categoryServiceFixture.createCategory(fixture.userFixture, categoryName);
 		assertNotNull(actual);
 		assertEquals(categoryName, actual.getName());
 		assertNull(actual.getSubscribes());
@@ -63,53 +52,44 @@ public class CategoryServiceTest {
 
 	@Test
 	public void testSubscribeNewSite() {
-		fail("Not yet implemented");
+		String categoryName = rnd.nextDouble() + "";
+		Category c = fixture.categoryServiceFixture.createCategory(fixture.userFixture, categoryName);
+		Category actual = fixture.categoryServiceFixture.subscribeSite(fixture.userFixture, c.getCategoryId(),
+				"http://www.huxiu.com/rss/0.xml");
+		assertEquals(1, actual.getSubscribes().size());
+
+		Subscribe subscribe = actual.getScribes().iterator().next();
+		List<FeedContent> contents = subscribe.getContents();
+		assertEquals(subscribe.getFeeds().size(), contents.size());
 	}
 
 	@Test
 	public void testSubscribeAlreadySite() {
 		String categoryName = rnd.nextDouble() + "";
 
-		Category c = srv.createCategory(fixture.userFixture, categoryName);
+		Category c = fixture.categoryServiceFixture.createCategory(fixture.userFixture, categoryName);
+		String subscribeSite = fixture.feedFixture.iterator().next().getSite();
 
-		Map<Subscribe, List<FeedContent>> actual = srv.subscribeSite(fixture.userFixture, c.getCategoryId(),
-				fixture.feedFixture.iterator().next().getSite());
-		assertEquals(1, actual.size());
-		c = srv.queryCategory(fixture.userFixture, categoryName);
+		Category ret = fixture.categoryServiceFixture.subscribeSite(fixture.userFixture, c.getCategoryId(),
+				subscribeSite);
+		c = fixture.categoryServiceFixture.queryCategory(fixture.userFixture, categoryName);
+
+		// check for return.
+		assertEquals(1, ret.getSubscribes().size());
+		assertEquals(1, ret.getScribes().size());
+		// check for subscribe's.
+		Subscribe actualSubscribe = ret.getScribes().iterator().next();
+		assertEquals(subscribeSite, actualSubscribe.getSite());
 
 		// check for category's subscribe list.
 		assertEquals(1, c.getSubscribes().size());
-		assertEquals(actual.entrySet().iterator().next().getKey().getId(), c.getSubscribes().iterator().next()
-				.longValue());
-
-		// check for subscribe's content.
-		Subscribe actualScribe = actual.keySet().iterator().next();
-		assertEquals(2, actual.get(actualScribe).size());
-		Set<String> expectFeedContent = new HashSet<>();
-		Iterator<FeedContent> it = fixture.feedFixture.iterator();
-		expectFeedContent.add(it.next().getDescription());
-		expectFeedContent.add(it.next().getDescription());
-		for (FeedContent actualContent : actual.get(actualScribe)) {
-			assertTrue(expectFeedContent.remove(actualContent.getDescription()));
-		}
+		assertEquals(1, c.getScribes().size());
+		assertEquals(c.getSubscribes().iterator().next().longValue(), actualSubscribe.getId());
 
 		// check for duplicate subscribe.
-		actual = srv.subscribeSite(fixture.userFixture, c.getCategoryId(), fixture.feedFixture.iterator().next()
-				.getSite());
-		assertEquals(1, actual.size());
-		c = srv.queryCategory(fixture.userFixture, categoryName);
-
-		// check for category's subscribe list.
-		assertEquals(1, c.getSubscribes().size());
-		assertEquals(actual.entrySet().iterator().next().getKey().getId(), c.getSubscribes().iterator().next()
-				.longValue());
-
-		assertEquals(2, actual.get(actualScribe).size());
-	}
-
-	@Test
-	public void testDuplicateSubsribe() {
-		testSubscribeAlreadySite();
-
+		ret = fixture.categoryServiceFixture.subscribeSite(fixture.userFixture, c.getCategoryId(), fixture.feedFixture
+				.iterator().next().getSite());
+		assertEquals(1, ret.getSubscribes().size());
+		assertEquals(1, ret.getScribes().size());
 	}
 }
