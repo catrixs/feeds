@@ -22,11 +22,9 @@ public class SiteServiceImpl implements SiteService {
 			throw new IllegalArgumentException(String.format("illegal site to subscribe:site=%s", site));
 		}
 
-		Site siteInfo = new Site(site);
-		PreparedQuery pq = datastore.prepare(new Query(SiteEntityHelper.key(siteInfo)));
-		Entity entity = pq.asSingleEntity();
+		Entity entity = querySite(site);
 		if (entity == null) {
-			entity = SiteEntityHelper.toEntity(siteInfo);
+			entity = SiteEntityHelper.toEntity(new Site(site));
 			datastore.put(entity);
 			return true;
 		} else {
@@ -34,4 +32,19 @@ public class SiteServiceImpl implements SiteService {
 		}
 	}
 
+	@Override
+	public boolean existSubscribe(String site) {
+		if (!StringUtils.hasText(site)) {
+			throw new IllegalArgumentException(String.format("illegal site:site=%s", site));
+		}
+
+		Entity entity = querySite(site);
+		return entity != null;
+	}
+
+	private Entity querySite(String site) {
+		PreparedQuery pq = datastore.prepare(new Query(SiteEntityHelper.key(site)));
+		Entity entity = pq.asSingleEntity();
+		return entity;
+	}
 }

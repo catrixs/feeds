@@ -9,8 +9,8 @@ public abstract class SiteEntityHelper {
 		return Site.class.getSimpleName();
 	}
 
-	public static Key key(Site site) {
-		return KeyFactory.createKey(kind(), site.getSite());
+	public static Key key(String site) {
+		return KeyFactory.createKey(kind(), site);
 	}
 
 	public static Entity toEntity(Site site) {
@@ -18,7 +18,7 @@ public abstract class SiteEntityHelper {
 			return null;
 		}
 
-		return new Entity(key(site));
+		return new Entity(key(site.getSite()));
 	}
 
 	public static Site toSite(Entity entity) {

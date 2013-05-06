@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.util.CollectionUtils;
 
 import com.feiyang.feeds.model.Category;
-import com.feiyang.feeds.model.FeedContent;
 import com.feiyang.feeds.model.Subscribe;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -33,10 +32,8 @@ public abstract class CategoryJson {
 				subscribeJson.put("unread", CollectionUtils.isEmpty(subscribe.getFeeds()) ? 0 : subscribe.getFeeds()
 						.size());
 				if (!CollectionUtils.isEmpty(subscribe.getContents())) {
-					for (FeedContent content : subscribe.getContents()) {
-						JSONObject contentJson = new JSONObject(content);
-						subscribeJson.accumulate("feeds", contentJson);
-					}
+					JSONObject contentJson = FeedContentJson.toJson(subscribe.getContents());
+					subscribeJson.put("feeds", contentJson);
 				}
 				json.accumulate("subscribes", subscribeJson);
 			}

@@ -9,4 +9,12 @@ public interface SiteService {
 	 * @return not exist true, exists false.
 	 */
 	boolean subscribeSite(String site);
+
+	/**
+	 * check this site has subscribes or not.
+	 * 
+	 * @param site
+	 * @return
+	 */
+	boolean existSubscribe(String site);
 }
