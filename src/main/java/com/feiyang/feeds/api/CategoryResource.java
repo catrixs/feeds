@@ -1,5 +1,7 @@
 package com.feiyang.feeds.api;
 
+import java.util.Arrays;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.feiyang.feeds.api.aggregator.CategoryAggregator;
 import com.feiyang.feeds.api.json.CategoryJson;
 import com.feiyang.feeds.model.Category;
 import com.feiyang.feeds.model.User;
@@ -24,6 +27,9 @@ public class CategoryResource {
 	private UserService userService;
 	@Autowired(required = true)
 	private CategoryService categoryService;
+
+	@Autowired(required = true)
+	private CategoryAggregator categoryAggregator;
 
 	@GET
 	@Path("/create.json")
@@ -67,6 +73,31 @@ public class CategoryResource {
 		}
 
 		Category c = categoryService.subscribeSite(user, categoryId, site);
+		return CategoryJson.toJson(c).toString();
+	}
+
+	@GET
+	@Path("/show.json")
+	@Produces({ MediaType.APPLICATION_JSON + "; charset=utf-8" })
+	public String feeds(@QueryParam(value = "uid") long uid, @QueryParam(value = "cid") long categoryId)
+			throws JSONException {
+		if (uid <= 0) {
+			return "illegal uid=" + uid;
+		}
+		if (categoryId <= 0) {
+			return "illegal category id=" + uid;
+		}
+
+		User user = userService.queryUser(uid);
+		if (user == null) {
+			return "no user which uid=" + uid;
+		}
+
+		Category c = categoryService.queryCategory(user, categoryId);
+		if (c == null) {
+			return "{}";
+		}
+		categoryAggregator.aggregate(Arrays.asList(c));
 		return CategoryJson.toJson(c).toString();
 	}
 }

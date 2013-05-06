@@ -95,7 +95,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 	}
 
 	@Override
-	public void clearUnread(long subscribeId, List<FeedContent> feedIds) {
+	public void clearUnread(long subscribeId, Collection<Long> feedIds) {
 		Assert.isTrue(subscribeId > 0, String.format("[clear unread] illegal subscribeId:subscribeId=%d", subscribeId));
 
 		if (CollectionUtils.isEmpty(feedIds)) {
@@ -109,8 +109,8 @@ public class SubscribeServiceImpl implements SubscribeService {
 		}
 
 		boolean dirty = false;
-		for (FeedContent feed : feedIds) {
-			dirty |= unreadFeeds.remove(feed.getId());
+		for (Long feed : feedIds) {
+			dirty |= unreadFeeds.remove(feed);
 		}
 		if (dirty) {
 			datastore.put(SubscribeEntityHelper.toEntity(scribe));
@@ -157,6 +157,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 		return rs;
 	}
 
+	@Override
 	public Subscribe querySubscribe(long subscribeId) {
 		PreparedQuery pq = datastore.prepare(new Query(SubscribeEntityHelper.key(subscribeId)));
 		Entity entity = pq.asSingleEntity();

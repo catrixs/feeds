@@ -21,10 +21,10 @@ public interface SubscribeService {
 	/**
 	 * clear user's subscribe unread feed ids.
 	 * 
-	 * @param feedIds
+	 * @param ids
 	 *            FeedContent contains id and site.
 	 */
-	void clearUnread(long subscribeId, List<FeedContent> feedIds);
+	void clearUnread(long subscribeId, Collection<Long> ids);
 
 	/**
 	 * @param category
@@ -39,6 +39,12 @@ public interface SubscribeService {
 	 * @return
 	 */
 	List<Subscribe> querySubscribes(Collection<Long> subscribeIds);
+
+	/**
+	 * @param subscribeId
+	 * @return null if doesn't exist.
+	 */
+	Subscribe querySubscribe(long subscribeId);
 
 	/**
 	 * registry a new site subscribe.
