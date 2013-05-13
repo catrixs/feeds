@@ -1,9 +1,14 @@
 package com.feiyang.feeds.api;
 
-import javax.ws.rs.GET;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
@@ -15,10 +20,9 @@ import org.springframework.util.StringUtils;
 import com.feiyang.feeds.model.User;
 import com.feiyang.feeds.service.CategoryService;
 import com.feiyang.feeds.service.UserService;
-import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 @Component
-@Path("/")
+@Path("/account")
 public class LoginResource {
 	@Autowired(required = true)
 	private UserService userService;
@@ -26,24 +30,37 @@ public class LoginResource {
 	private CategoryService categoryService;
 
 	@Path("/login.json")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON + "; charset=utf-8" })
-	public Response login(@QueryParam(value = "name") String name, @QueryParam(value = "password") String password) {
-		return Response.ok("").cookie(new NewCookie("name", "Hello, world!")).build();
+	@POST
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces({ MediaType.TEXT_HTML + "; charset=utf-8" })
+	public Response login(@FormParam(value = "email") String email, @FormParam(value = "password") String password)
+	        throws URISyntaxException {
+		User user = userService.queryUser(email);
+		if (user == null) {
+			return Response.seeOther(new URI("/registry.html")).build();
+		}
+		return redirectToHomepage(user);
+	}
+
+	private Response redirectToHomepage(User user) throws URISyntaxException {
+		return Response.seeOther(new URI("/googleReader.html"))
+		        .cookie(new NewCookie(new Cookie("uid", "" + user.getUid(), "/", null))).build();
 	}
 
 	@Path("/registry.json")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON + "; charset=utf-8" })
-	public String registry(@QueryParam("name") String name) {
+	@POST
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces({ MediaType.TEXT_HTML + "; charset=utf-8" })
+	public Response registry(@FormParam("email") String email, @FormParam("password") String password,
+	        @FormParam("name") String name) throws URISyntaxException {
 		if (!StringUtils.hasText(name)) {
 			throw new IllegalArgumentException("");
 		}
 
-		User user = userService.createUser(name);
+		User user = userService.createUser(email, password, name);
 
 		// create default user's category.
 		categoryService.createCategory(user, "default");
-		return new JSONObject(user).toString();
+		return redirectToHomepage(user);
 	}
 }

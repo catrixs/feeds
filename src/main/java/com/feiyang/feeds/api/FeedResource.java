@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -44,7 +44,7 @@ public class FeedResource {
 	@GET
 	@Path("/home.json")
 	@Produces(MediaType.APPLICATION_JSON + "; charset=utf-8")
-	public String home(@QueryParam(value = "uid") long uid) throws JSONException {
+	public String home(@CookieParam(value = "uid") long uid) throws JSONException {
 		if (uid <= 0) {
 			throw new IllegalArgumentException(String.format("[home.json] illegal uid:uid=%d", uid));
 		}

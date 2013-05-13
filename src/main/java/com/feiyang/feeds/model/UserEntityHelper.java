@@ -20,6 +20,8 @@ public abstract class UserEntityHelper {
 
 		Entity entity = new Entity(KeyFactory.createKey(kind(), user.getUid()));
 		entity.setProperty("name", user.getUsername());
+		entity.setProperty("email", user.getEmail());
+		entity.setUnindexedProperty("password", user.getPassword());
 		return entity;
 	}
 
@@ -28,6 +30,11 @@ public abstract class UserEntityHelper {
 			return null;
 		}
 
-		return new User(entity.getKey().getId(), (String) entity.getProperty("name"));
+		long uid = entity.getKey().getId();
+		String name = (String) entity.getProperty("name");
+		String email = (String) entity.getProperty("email");
+		String password = (String) entity.getProperty("password");
+
+		return new User(uid, email, password, name);
 	}
 }

@@ -191,7 +191,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 			datastore.put(SubscribeEntityHelper.toEntity(subscribe));
 		} else {
 			LOG.info(String.format("user(%d) category(%s) has already subscribe site(%s)", user.getUid(),
-					category.getName(), site));
+			        category.getName(), site));
 		}
 
 		subscribe.setContents(contents);

@@ -25,7 +25,7 @@ public class Category {
 
 	public Entity toEntity() {
 		Key key = KeyFactory.createKey(KeyFactory.createKey(User.class.getSimpleName(), user.getUid()),
-				Category.class.getSimpleName(), categoryId);
+		        Category.class.getSimpleName(), categoryId);
 		Entity entity = new Entity(key);
 		entity.setProperty("name", name);
 		entity.setProperty("subscribes", subscribes);

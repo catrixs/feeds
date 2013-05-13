@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>RSS Reader</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Bootstrap -->
+<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="css/bootstrap.css" rel="stylesheet" media="screen">
+<link href="style.css" rel="stylesheet" media="screen">
+<style>
+.header {
+	margin: auto;
+	text-align: center;
+	color: blue;
+}
+</style>
+<script src="http://code.jquery.com/jquery.js"></script>
+
+<script src="js/bootstrap.min.js"></script>
+
+<script>
+	function subscribe() {
+		var x;
+		var person = prompt("Enter a search term to find feeds or paste a feed url");
+		if (person != null) {
+			$.ajax({
+				url: "/category/subscribe.json",
+			});
+		}
+	}
+
+	$(document).ready(function() {
+		$("#star").click(function() {
+			$("#rss-feed").load("content.xml");
+		});
+	});
+
+	$(document).ready(function() {
+		$("#trends").click(function() {
+			$("#rss-feed").load("content.xml");
+		});
+	});
+
+	$(document).ready(function() {
+		$("#browse").click(function() {
+			$("#rss-feed").load("content.xml");
+		});
+	});
+
+	$(document).ready(function() {
+		$("#recommended-items").click(function() {
+			$("#rss-feed").load("content.xml");
+		});
+	});
+
+	$(document).ready(function() {
+		$("#recommended-sources").click(function() {
+			$("#rss-feed").load("content.xml");
+		});
+	});
+
+	$(document).ready(function() {
+		$.getJSON("/view/home.json", function(data) {
+			var subscription = $("#subscription");
+			$.each(data.categories, function(i, category) {
+				if(category.name == "default") {
+									
+				} else {
+					subscription.append($("<li />").attr({id: category.id}).text(category.name));
+				}
+			});
+		});
+	});
+</script>
+</head>
+
+<body>
+
+	<div class="header">
+		<h2>Google Reader</h2>
+		<form id="search-form">
+			<input type="text" name="search" placeholder="Search Reader">
+			<input type="submit" value="Search">
+		</form>
+	</div>
+
+
+
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span2" id="navbar">
+				<div id="subscribe-section">
+					<button type="button" onclick="subscribe()">Subscribe</button>
+				</div>
+				<div id="home">
+					<a href="googleReader.html" id="home-button">Home</a>
+				</div>
+				<div id="all-items">
+					<a href="googleReader.html" id="all">All items</a>
+					<ul id="all-list">
+						<li><a href="#rss-feed" id="star">Starred items</a></li>
+						<li><a href="#rss-feed" id="trends">Trends</a></li>
+						<li><a href="#rss-feed" id="browse">Browse for stuff</a></li>
+					</ul>
+				</div>
+
+				<div id="explore-section">
+					<a href="#rss-feed" id="explore">Explore</a>
+					<ul>
+						<li><a href="#rss-feed" id="recommended-items">Recommended
+								items</a></li>
+						<li><a href="#rss-feed" id="recommended-sources">Recommended
+								sources</a></li>
+					</ul>
+				</div>
+
+				<div id="subscription">Subscription</div>
+			</div>
+
+
+			<div class="span6" id="content">
+				<p name="rss-feed" id="rss-feed">some text</p>
+
+			</div>
+		</div>
+
+	</div>
+</body>
+</html>

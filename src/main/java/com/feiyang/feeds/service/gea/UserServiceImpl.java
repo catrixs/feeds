@@ -14,6 +14,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
@@ -22,12 +23,13 @@ public class UserServiceImpl implements UserService {
 	private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 	@Override
-	public User createUser(String name) {
-		if (!StringUtils.hasText(name)) {
-			throw new IllegalArgumentException("");
-		}
+	public User createUser(String email, String password, String name) {
+		Assert.isTrue(StringUtils.hasText(email), String.format("[UserService query] illegal email:email=%s", email));
+		Assert.isTrue(StringUtils.hasText(password),
+		        String.format("[UserService query] illegal email:email=%s", password));
+		Assert.isTrue(StringUtils.hasText(name), String.format("[UserService query] illegal email:email=%s", name));
 
-		User user = new User(SimpleUuidService.next(), name);
+		User user = new User(SimpleUuidService.next(), email, password, name);
 		Entity entity = UserEntityHelper.toEntity(user);
 		datastore.put(entity);
 		return user;
@@ -39,8 +41,17 @@ public class UserServiceImpl implements UserService {
 
 		Key key = UserEntityHelper.key(uid);
 		PreparedQuery pq = datastore.prepare(new Query(UserEntityHelper.kind()).setFilter(new FilterPredicate(
-				Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, key)));
+		        Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, key)));
 		Entity entity = pq.asSingleEntity();
 		return UserEntityHelper.toUser(entity);
+	}
+
+	@Override
+	public User queryUser(String email) {
+		Assert.isTrue(StringUtils.hasText(email), String.format("[UserService query] illegal email:email=%s", email));
+
+		Filter filter = new FilterPredicate("email", FilterOperator.EQUAL, email);
+		PreparedQuery pq = datastore.prepare(new Query(UserEntityHelper.kind()).setFilter(filter));
+		return UserEntityHelper.toUser(pq.asSingleEntity());
 	}
 }

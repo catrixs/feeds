@@ -50,12 +50,12 @@ public class CrawlerServiceImp implements CrawlerService {
 
 		@Override
 		public void onChannel(FeedParserState state, String title, String link, String description)
-				throws FeedParserException {
+		        throws FeedParserException {
 			site = link;
 		}
 
 		public void onItem(FeedParserState state, String title, String link, String description, String permalink)
-				throws FeedParserException {
+		        throws FeedParserException {
 			this.title = title;
 			this.link = link;
 			this.description = description;
@@ -78,7 +78,7 @@ public class CrawlerServiceImp implements CrawlerService {
 
 		@Override
 		public void onAuthor(FeedParserState state, String name, String email, String resource)
-				throws FeedParserException {
+		        throws FeedParserException {
 			this.author = name;
 		}
 	}

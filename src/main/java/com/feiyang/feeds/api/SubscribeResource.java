@@ -25,7 +25,7 @@ public class SubscribeResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + "; charset=utf-8")
 	public String read(@QueryParam(value = "uid") long uid, @QueryParam(value = "sid") long subscribeId,
-			@QueryParam(value = "feeds") String feedIds) {
+	        @QueryParam(value = "feeds") String feedIds) {
 		if (uid <= 0) {
 			return "illegal uid=" + uid;
 		}

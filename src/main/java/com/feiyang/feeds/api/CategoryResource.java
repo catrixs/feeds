@@ -2,6 +2,7 @@ package com.feiyang.feeds.api;
 
 import java.util.Arrays;
 
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -35,7 +36,7 @@ public class CategoryResource {
 	@Path("/create.json")
 	@Produces({ MediaType.APPLICATION_JSON + "; charset=utf-8" })
 	public String createCategory(@QueryParam(value = "uid") long uid, @QueryParam(value = "name") String name)
-			throws JSONException {
+	        throws JSONException {
 		if (!StringUtils.hasText(name)) {
 			return "illegal uid=" + uid;
 		}
@@ -55,8 +56,8 @@ public class CategoryResource {
 	@GET
 	@Path("/subscribe.json")
 	@Produces({ MediaType.APPLICATION_JSON + "; charset=utf-8" })
-	public String subscribe(@QueryParam(value = "uid") long uid, @QueryParam(value = "cid") long categoryId,
-			@QueryParam(value = "site") String site) throws JSONException {
+	public String subscribe(@CookieParam(value = "uid") long uid, @QueryParam(value = "cid") long categoryId,
+	        @QueryParam(value = "site") String site) throws JSONException {
 		if (uid <= 0) {
 			return "illegal uid=" + uid;
 		}
@@ -79,8 +80,8 @@ public class CategoryResource {
 	@GET
 	@Path("/show.json")
 	@Produces({ MediaType.APPLICATION_JSON + "; charset=utf-8" })
-	public String feeds(@QueryParam(value = "uid") long uid, @QueryParam(value = "cid") long categoryId)
-			throws JSONException {
+	public String feeds(@CookieParam(value = "uid") long uid, @QueryParam(value = "cid") long categoryId)
+	        throws JSONException {
 		if (uid <= 0) {
 			return "illegal uid=" + uid;
 		}

@@ -34,7 +34,7 @@ public class FeedContent {
 	}
 
 	public FeedContent(long id, String site, String link, String title, String description, String category,
-			String author, Date pubDate) {
+	        String author, Date pubDate) {
 		super();
 		this.id = id;
 		this.site = site;

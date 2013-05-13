@@ -68,7 +68,7 @@ public class CategoryServiceImpl implements CategoryService {
 		// query category.
 		Key userKeyFilter = UserEntityHelper.key(user.getUid());
 		PreparedQuery pq = datastore.prepare(new Query(CategoryEntityHelper.kind()).setAncestor(userKeyFilter)
-				.setFilter(new FilterPredicate("name", FilterOperator.EQUAL, name)));
+		        .setFilter(new FilterPredicate("name", FilterOperator.EQUAL, name)));
 		Entity entity = pq.asSingleEntity();
 		Category category = CategoryEntityHelper.toCategory(entity);
 		if (category == null) {
@@ -97,7 +97,7 @@ public class CategoryServiceImpl implements CategoryService {
 	public Category subscribeSite(User user, long categoryId, String site) {
 		if (user == null || user.getUid() <= 0 || !StringUtils.hasText(site)) {
 			throw new IllegalArgumentException(String.format("illegal user or site to subscribe:user=%s, site=%s",
-					user, site));
+			        user, site));
 		}
 
 		Category category = queryCategory(user, categoryId);

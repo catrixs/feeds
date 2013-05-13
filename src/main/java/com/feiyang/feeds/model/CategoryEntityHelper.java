@@ -13,7 +13,7 @@ public abstract class CategoryEntityHelper {
 
 	public static Key key(long uid, long categoryId) {
 		return KeyFactory.createKey(KeyFactory.createKey(User.class.getSimpleName(), uid),
-				Category.class.getSimpleName(), categoryId);
+		        Category.class.getSimpleName(), categoryId);
 	}
 
 	public static Category toCategory(Entity entity) {

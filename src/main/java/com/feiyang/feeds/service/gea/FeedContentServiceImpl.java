@@ -38,10 +38,10 @@ public class FeedContentServiceImpl implements FeedContentService {
 
 		long siteId = FeedUuidService.siteId(site);
 		Filter siteFilter = CompositeFilterOperator.and(
-				new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.GREATER_THAN_OR_EQUAL, KeyFactory
-						.createKey(FeedContentEntityHelper.kind(), siteId)),
-				new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.LESS_THAN_OR_EQUAL, KeyFactory
-						.createKey(FeedContentEntityHelper.kind(), FeedUuidService.maxSiteId(siteId))));
+		        new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.GREATER_THAN_OR_EQUAL, KeyFactory
+		                .createKey(FeedContentEntityHelper.kind(), siteId)),
+		        new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.LESS_THAN_OR_EQUAL, KeyFactory
+		                .createKey(FeedContentEntityHelper.kind(), FeedUuidService.maxSiteId(siteId))));
 		PreparedQuery pq = datastore.prepare(new Query(FeedContentEntityHelper.kind()).setFilter(siteFilter));
 
 		List<Entity> entities = pq.asList(FetchOptions.Builder.withLimit(limit));
@@ -82,7 +82,7 @@ public class FeedContentServiceImpl implements FeedContentService {
 
 		// check duplicate and ignore already stored content.
 		PreparedQuery pq = datastore.prepare(new Query(FeedContentEntityHelper.kind()).setFilter(
-				new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.IN, feedIds)).setKeysOnly());
+		        new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.IN, feedIds)).setKeysOnly());
 		List<Entity> alreadyStoredEntities = pq.asList(FetchOptions.Builder.withLimit(feedContents.size()));
 		FeedContent removed = new FeedContent();
 		for (Entity entity : alreadyStoredEntities) {
