@@ -5,18 +5,19 @@ import java.util.List;
 import org.springframework.util.CollectionUtils;
 
 import com.feiyang.feeds.model.FeedContent;
+import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 public abstract class FeedContentJson {
-	public static JSONObject toJson(List<FeedContent> contents) throws JSONException {
-		JSONObject json = new JSONObject();
+	public static JSONArray toJson(List<FeedContent> contents) throws JSONException {
+		JSONArray array = new JSONArray();
 		if (!CollectionUtils.isEmpty(contents)) {
 			for (FeedContent content : contents) {
-				json.accumulate("feeds", toJson(content));
+				array.put(toJson(content));
 			}
 		}
-		return json;
+		return array;
 	}
 
 	public static JSONObject toJson(FeedContent content) throws JSONException {

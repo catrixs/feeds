@@ -1,5 +1,7 @@
 package com.feiyang.feeds.api.json;
 
+import java.util.Arrays;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +23,7 @@ public class CategoryJsonTest {
 
 	@Test
 	public void testToJson() throws JSONException {
-		JSONObject json = CategoryJson.toJson(fixture.categoryFixture);
+		JSONObject json = CategoryJson.toJson(Arrays.asList(fixture.categoryFixture));
 		System.err.println(json.toString());
 	}
 
