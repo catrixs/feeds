@@ -1,5 +1,7 @@
 package com.feiyang.feeds.util;
 
+import java.util.Date;
+
 import org.springframework.util.StringUtils;
 
 import com.feiyang.feeds.model.FeedContent;
@@ -14,8 +16,18 @@ import com.feiyang.feeds.model.FeedContent;
  * 
  */
 public abstract class FeedUuidService {
+	private static final long MAX_TICKET = 1L << 16;
+	private static volatile long ticket = 0;
+
 	public static long id(FeedContent content) {
-		return siteId(content.getSite()) | linkId(content.getLink());
+		assert content != null;
+		assert content.getPubDate() != null;
+
+		Date date = content.getPubDate();
+		if (ticket++ > MAX_TICKET) {
+			ticket = 0;
+		}
+		return (date.getTime() << 16) + ticket;
 	}
 
 	public static long siteId(String site) {

@@ -187,7 +187,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 
 		if (CollectionUtils.isEmpty(contents)) {
 			// we got some error may be cause of fail crawl.
-			throw new IllegalStateException(String.format("could subscribe the site ", site));
+			throw new IllegalStateException(String.format("could subscribe the site %s", site));
 		}
 
 		List<Long> feedIds = new ArrayList<>();

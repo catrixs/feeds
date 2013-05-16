@@ -18,10 +18,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
@@ -36,12 +34,7 @@ public class FeedContentServiceImpl implements FeedContentService {
 			return Collections.emptyList();
 		}
 
-		long siteId = FeedUuidService.siteId(site);
-		Filter siteFilter = CompositeFilterOperator.and(
-		        new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.GREATER_THAN_OR_EQUAL, KeyFactory
-		                .createKey(FeedContentEntityHelper.kind(), siteId)),
-		        new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.LESS_THAN_OR_EQUAL, KeyFactory
-		                .createKey(FeedContentEntityHelper.kind(), FeedUuidService.maxSiteId(siteId))));
+		Filter siteFilter = new FilterPredicate("site", FilterOperator.EQUAL, site);
 		PreparedQuery pq = datastore.prepare(new Query(FeedContentEntityHelper.kind()).setFilter(siteFilter));
 
 		List<Entity> entities = pq.asList(FetchOptions.Builder.withLimit(limit));

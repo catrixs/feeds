@@ -29,6 +29,7 @@ import com.feiyang.feeds.service.gea.SubscribeServiceImpl;
 import com.feiyang.feeds.util.FeedUuidService;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Key;
+import com.ibm.icu.util.Calendar;
 
 public class Fixture {
 	public final User userFixture = new User(12345L, "test");
@@ -59,7 +60,9 @@ public class Fixture {
 	private List<Key> keys;
 
 	public Fixture() {
+		Calendar c = Calendar.getInstance();
 		for (FeedContent iterable_element : feedFixture) {
+			iterable_element.setPubDate(c.getTime());
 			iterable_element.setId(FeedUuidService.id(iterable_element));
 		}
 

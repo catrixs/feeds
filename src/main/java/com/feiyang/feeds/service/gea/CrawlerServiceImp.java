@@ -39,7 +39,7 @@ public class CrawlerServiceImp implements CrawlerService {
 
 	private static class FeedParserListener extends DefaultFeedParserListener {
 		private List<FeedContent> crawledContent;
-		private String site;
+		private final String site;
 		private String siteName;
 
 		private String link;
@@ -49,14 +49,14 @@ public class CrawlerServiceImp implements CrawlerService {
 		private String author;
 		private Date pubDate;
 
-		public FeedParserListener() {
+		public FeedParserListener(String url) {
 			crawledContent = new ArrayList<>();
+			this.site = url;
 		}
 
 		@Override
 		public void onChannel(FeedParserState state, String title, String link, String description)
 		        throws FeedParserException {
-			site = link;
 			siteName = title;
 		}
 
@@ -95,7 +95,7 @@ public class CrawlerServiceImp implements CrawlerService {
 			// crawl the rss site.
 			ResourceRequest request = ResourceRequestFactory.getResourceRequest(url);
 			InputStream is = request.getInputStream();
-			FeedParserListener listener = new FeedParserListener();
+			FeedParserListener listener = new FeedParserListener(url);
 			FeedParser parser = FeedParserFactory.newFeedParser();
 			parser.parse(listener, is, url);
 			List<FeedContent> contents = listener.crawledContent;
@@ -107,7 +107,7 @@ public class CrawlerServiceImp implements CrawlerService {
 			subscribeService.updateUnread(contents);
 
 			// subscribe new site.
-			Site site = new Site(listener.site, listener.siteName);
+			Site site = new Site(url, listener.siteName);
 			site = siteService.subscribeSite(site);
 
 			Map<Site, List<FeedContent>> ret = new HashMap<>();

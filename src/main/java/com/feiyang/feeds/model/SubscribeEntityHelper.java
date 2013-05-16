@@ -61,8 +61,8 @@ public class SubscribeEntityHelper {
 		}
 
 		long id = entity.getKey().getId();
-		String site = entity.getProperty("site").toString();
-		String name = entity.getProperty("name").toString();
+		String site = (String) entity.getProperty("site");
+		String name = (String) entity.getProperty("name");
 		long uid = (long) entity.getProperty("uid");
 		@SuppressWarnings("unchecked")
 		List<Long> feeds = (List<Long>) entity.getProperty("feeds");

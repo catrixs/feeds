@@ -23,8 +23,13 @@
 		var x;
 		var person = prompt("Enter a search term to find feeds or paste a feed url");
 		if (person != null) {
-			$.ajax({
-				url: "/category/subscribe.json",
+			var defaultCategoryId = $("#subscription").attr("defaultId");
+			if (defaultCategoryId == null) {
+				return;
+			}
+			
+			$.get("/category/subscribe.json", {cid: defaultCategoryId, site: person}, function(data) {
+				$("subscription").append("<a />").attr(href, person);
 			});
 		}
 	}
@@ -63,11 +68,20 @@
 		$.getJSON("/view/home.json", function(data) {
 			var subscription = $("#subscription");
 			$.each(data.categories, function(i, category) {
+				var cur = null;
 				if(category.name == "default") {
-									
+					subscription.attr('defaultId', category.id);
+					cur = subscription;
 				} else {
-					subscription.append($("<li />").attr({id: category.id}).text(category.name));
+					cur = $("<li />").attr('id', category.id).text(category.name)
+					subscription.append(cur);
 				}
+				
+				$.each(category.subscribes, function(i, subscribe) {
+					var li = $("<li />")
+					li.append($("<a />").attr('href', subscribe.site).text(subscribe.name));
+					cur.append(li);
+				});
 			});
 		});
 	});

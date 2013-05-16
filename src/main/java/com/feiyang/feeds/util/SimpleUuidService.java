@@ -1,5 +1,6 @@
 package com.feiyang.feeds.util;
 
+
 /**
  * <p>
  * a very simple uuid generator which could generate 64-bit long value.
@@ -31,7 +32,7 @@ public abstract class SimpleUuidService {
 		}
 		return timestamp | ticket;
 	}
-
+	
 	public static long timestamp(long id) {
 		return id >>> TIMESTAMP_SHIFT;
 	}
