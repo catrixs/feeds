@@ -16,15 +16,17 @@ import java.util.List;
 public class Subscribe {
 	private long id;
 	private String site;
+	private String name;
 
 	private long uid;
 	private List<Long> feeds;
 
 	private transient List<FeedContent> contents;
 
-	public Subscribe(long id, String site, long uid, List<Long> feeds) {
+	public Subscribe(long id, String site, String name, long uid, List<Long> feeds) {
 		this.id = id;
 		this.site = site;
+		this.name = name;
 		this.uid = uid;
 		this.feeds = feeds;
 	}
@@ -51,6 +53,14 @@ public class Subscribe {
 
 	public void setSite(String site) {
 		this.site = site;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public List<Long> getFeeds() {
@@ -102,6 +112,8 @@ public class Subscribe {
 		builder.append(id);
 		builder.append(", site=");
 		builder.append(site);
+		builder.append(", name=");
+		builder.append(name);
 		builder.append(", uid=");
 		builder.append(uid);
 		builder.append(", feeds=");

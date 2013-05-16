@@ -1,5 +1,7 @@
 package com.feiyang.feeds.service;
 
+import com.feiyang.feeds.model.Site;
+
 public interface SiteService {
 	/**
 	 * subscribe one site, if the site already subscribed by another, just
@@ -8,7 +10,7 @@ public interface SiteService {
 	 * @param site
 	 * @return not exist true, exists false.
 	 */
-	boolean subscribeSite(String site);
+	Site subscribeSite(Site site);
 
 	/**
 	 * check this site has subscribes or not.
@@ -16,5 +18,5 @@ public interface SiteService {
 	 * @param site
 	 * @return
 	 */
-	boolean existSubscribe(String site);
+	Site existSubscribe(String site);
 }

@@ -1,6 +1,7 @@
 package com.feiyang.feeds.service.gea;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import com.feiyang.feeds.model.Site;
@@ -17,29 +18,26 @@ public class SiteServiceImpl implements SiteService {
 	private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 	@Override
-	public boolean subscribeSite(String site) {
-		if (!StringUtils.hasText(site)) {
-			throw new IllegalArgumentException(String.format("illegal site to subscribe:site=%s", site));
-		}
+	public Site subscribeSite(Site site) {
+		Assert.notNull(site, String.format("illegal site to subscribe:site=%s", site));
+		Assert.hasText(site.getSite(), String.format("illegal site to subscribe:site=%s", site));
 
-		Entity entity = querySite(site);
+		Entity entity = querySite(site.getSite());
 		if (entity == null) {
-			entity = SiteEntityHelper.toEntity(new Site(site));
+			entity = SiteEntityHelper.toEntity(site);
 			datastore.put(entity);
-			return true;
-		} else {
-			return false;
 		}
+		return site;
 	}
 
 	@Override
-	public boolean existSubscribe(String site) {
+	public Site existSubscribe(String site) {
 		if (!StringUtils.hasText(site)) {
 			throw new IllegalArgumentException(String.format("illegal site:site=%s", site));
 		}
 
 		Entity entity = querySite(site);
-		return entity != null;
+		return SiteEntityHelper.toSite(entity);
 	}
 
 	private Entity querySite(String site) {

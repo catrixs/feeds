@@ -33,6 +33,7 @@ public abstract class CategoryJson {
 				JSONObject subscribeJson = new JSONObject();
 				subscribeJson.put("id", subscribe.getId());
 				subscribeJson.put("site", subscribe.getSite());
+				subscribeJson.put("name", subscribe.getName());
 				subscribeJson.put("unread", CollectionUtils.isEmpty(subscribe.getFeeds()) ? 0 : subscribe.getFeeds()
 				        .size());
 				if (!CollectionUtils.isEmpty(subscribe.getContents())) {

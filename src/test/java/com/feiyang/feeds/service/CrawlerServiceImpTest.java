@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.junit.After;
@@ -14,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import com.feiyang.feeds.Fixture;
 import com.feiyang.feeds.model.FeedContent;
+import com.feiyang.feeds.model.Site;
 import com.feiyang.feeds.util.FeedUuidService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -22,7 +25,7 @@ import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 
 public class CrawlerServiceImpTest {
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalTaskQueueTestConfig(),
-			new LocalDatastoreServiceTestConfig());
+	        new LocalDatastoreServiceTestConfig());
 
 	private Fixture fixture = new Fixture();
 
@@ -39,20 +42,22 @@ public class CrawlerServiceImpTest {
 
 	@Test
 	public void testCrawl() {
-		List<FeedContent> contents = fixture.crawlerServiceFixture.crawl("http://www.huxiu.com/rss/0.xml");
+		Map<Site, List<FeedContent>> contents = fixture.crawlerServiceFixture.crawl("http://www.huxiu.com/rss/0.xml");
 		Set<Long> set = new HashSet<>();
-		for (FeedContent feedContent : contents) {
-			System.err.println(feedContent);
-			assertTrue(StringUtils.hasText(feedContent.getSite()));
-			assertTrue(StringUtils.hasText(feedContent.getAuthor()));
-			// assertTrue(StringUtils.hasText(feedContent.getCategory()));
-			assertTrue(StringUtils.hasText(feedContent.getDescription()));
-			assertTrue(StringUtils.hasText(feedContent.getLink()));
-			assertTrue(StringUtils.hasText(feedContent.getTitle()));
-			assertNotNull(feedContent.getPubDate());
+		for (Entry<Site, List<FeedContent>> entry : contents.entrySet()) {
+			assertTrue(StringUtils.hasText(entry.getKey().getName()));
+			for (FeedContent feedContent : entry.getValue()) {
+				System.err.println(feedContent);
+				assertTrue(StringUtils.hasText(feedContent.getSite()));
+				// assertTrue(StringUtils.hasText(feedContent.getCategory()));
+				assertTrue(StringUtils.hasText(feedContent.getDescription()));
+				assertTrue(StringUtils.hasText(feedContent.getLink()));
+				assertTrue(StringUtils.hasText(feedContent.getTitle()));
+				assertNotNull(feedContent.getPubDate());
 
-			boolean add = set.add(FeedUuidService.id(feedContent));
-			assertTrue(add);
+				boolean add = set.add(FeedUuidService.id(feedContent));
+				assertTrue(add);
+			}
 		}
 	}
 }

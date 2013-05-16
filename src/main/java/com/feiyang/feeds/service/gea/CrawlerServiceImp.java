@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.feedparser.DefaultFeedParserListener;
 import org.apache.commons.feedparser.FeedParser;
@@ -19,23 +21,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.feiyang.feeds.model.FeedContent;
+import com.feiyang.feeds.model.Site;
 import com.feiyang.feeds.service.CrawlerService;
 import com.feiyang.feeds.service.FeedContentService;
+import com.feiyang.feeds.service.SiteService;
 import com.feiyang.feeds.service.SubscribeService;
 
 @Component
 public class CrawlerServiceImp implements CrawlerService {
 	private static final Logger LOG = Logger.getLogger(CrawlerService.class);
-
 	@Autowired(required = true)
 	private FeedContentService feedContentService;
-
 	@Autowired(required = true)
 	private SubscribeService subscribeService;
+	@Autowired(required = true)
+	private SiteService siteService;
 
 	private static class FeedParserListener extends DefaultFeedParserListener {
 		private List<FeedContent> crawledContent;
 		private String site;
+		private String siteName;
 
 		private String link;
 		private String title;
@@ -52,6 +57,7 @@ public class CrawlerServiceImp implements CrawlerService {
 		public void onChannel(FeedParserState state, String title, String link, String description)
 		        throws FeedParserException {
 			site = link;
+			siteName = title;
 		}
 
 		public void onItem(FeedParserState state, String title, String link, String description, String permalink)
@@ -84,14 +90,14 @@ public class CrawlerServiceImp implements CrawlerService {
 	}
 
 	@Override
-	public List<FeedContent> crawl(String site) {
+	public Map<Site, List<FeedContent>> crawl(String url) {
 		try {
 			// crawl the rss site.
-			ResourceRequest request = ResourceRequestFactory.getResourceRequest(site);
+			ResourceRequest request = ResourceRequestFactory.getResourceRequest(url);
 			InputStream is = request.getInputStream();
 			FeedParserListener listener = new FeedParserListener();
 			FeedParser parser = FeedParserFactory.newFeedParser();
-			parser.parse(listener, is, site);
+			parser.parse(listener, is, url);
 			List<FeedContent> contents = listener.crawledContent;
 
 			// save content to storage.
@@ -100,11 +106,17 @@ public class CrawlerServiceImp implements CrawlerService {
 			// update unread.
 			subscribeService.updateUnread(contents);
 
-			return contents;
+			// subscribe new site.
+			Site site = new Site(listener.site, listener.siteName);
+			site = siteService.subscribeSite(site);
+
+			Map<Site, List<FeedContent>> ret = new HashMap<>();
+			ret.put(site, contents);
+			return ret;
 		} catch (IOException | FeedParserException e) {
 			// TODO need some recovery mechanism.
-			LOG.error(String.format("crawl site(%s) error:", site), e);
-			return Collections.emptyList();
+			LOG.error(String.format("crawl site(%s) error:", url), e);
+			return Collections.emptyMap();
 		}
 	}
 
@@ -122,5 +134,13 @@ public class CrawlerServiceImp implements CrawlerService {
 
 	public void setSubscribeService(SubscribeService subscribeService) {
 		this.subscribeService = subscribeService;
+	}
+
+	public SiteService getSiteService() {
+		return siteService;
+	}
+
+	public void setSiteService(SiteService siteService) {
+		this.siteService = siteService;
 	}
 }

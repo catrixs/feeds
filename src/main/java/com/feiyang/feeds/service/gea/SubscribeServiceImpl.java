@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import com.feiyang.feeds.model.Category;
 import com.feiyang.feeds.model.FeedContent;
+import com.feiyang.feeds.model.Site;
 import com.feiyang.feeds.model.Subscribe;
 import com.feiyang.feeds.model.SubscribeEntityHelper;
 import com.feiyang.feeds.model.User;
@@ -172,12 +173,23 @@ public class SubscribeServiceImpl implements SubscribeService {
 
 		// fetch latest feed content.
 		List<FeedContent> contents = null;
-		boolean siteExist = siteService.subscribeSite(site);
-		if (siteExist) {
-			contents = crawlerService.crawl(site);
+		Site siteModule = siteService.existSubscribe(site);
+		if (siteModule == null) {
+			Map<Site, List<FeedContent>> ret = crawlerService.crawl(site);
+			if (!CollectionUtils.isEmpty(ret)) {
+				Entry<Site, List<FeedContent>> entry = ret.entrySet().iterator().next();
+				siteModule = entry.getKey();
+				contents = entry.getValue();
+			}
 		} else {
 			contents = feedContentService.latestContent(site, NEW_SUBSCRIBE_MAX_CONTENT);
 		}
+
+		if (CollectionUtils.isEmpty(contents)) {
+			// we got some error may be cause of fail crawl.
+			throw new IllegalStateException(String.format("could subscribe the site ", site));
+		}
+
 		List<Long> feedIds = new ArrayList<>();
 		for (FeedContent feedContent : contents) {
 			feedIds.add(feedContent.getId());
@@ -187,7 +199,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 		Subscribe subscribe = checkAlreadySubscribed(category, site);
 		if (subscribe == null) {
 			// save the new subscribe to storage.
-			subscribe = new Subscribe(SimpleUuidService.next(), site, user.getUid(), feedIds);
+			subscribe = new Subscribe(SimpleUuidService.next(), site, siteModule.getName(), user.getUid(), feedIds);
 			datastore.put(SubscribeEntityHelper.toEntity(subscribe));
 		} else {
 			LOG.info(String.format("user(%d) category(%s) has already subscribe site(%s)", user.getUid(),

@@ -1,8 +1,10 @@
 package com.feiyang.feeds.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.feiyang.feeds.model.FeedContent;
+import com.feiyang.feeds.model.Site;
 
 public interface CrawlerService {
 	/**
@@ -11,5 +13,5 @@ public interface CrawlerService {
 	 * @param site
 	 * @return
 	 */
-	List<FeedContent> crawl(String site);
+	Map<Site, List<FeedContent>> crawl(String site);
 }

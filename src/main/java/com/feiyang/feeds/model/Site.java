@@ -2,10 +2,12 @@ package com.feiyang.feeds.model;
 
 public class Site {
 	private String site;
+	private String name;
 
-	public Site(String site) {
+	public Site(String site, String name) {
 		super();
 		this.site = site;
+		this.name = name;
 	}
 
 	@Override
@@ -46,12 +48,23 @@ public class Site {
 		this.site = site;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Site [site=");
 		builder.append(site);
+		builder.append(", name=");
+		builder.append(name);
 		builder.append("]");
 		return builder.toString();
 	}
+
 }

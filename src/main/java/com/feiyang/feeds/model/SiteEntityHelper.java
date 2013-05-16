@@ -18,7 +18,9 @@ public abstract class SiteEntityHelper {
 			return null;
 		}
 
-		return new Entity(key(site.getSite()));
+		Entity entity = new Entity(key(site.getSite()));
+		entity.setUnindexedProperty("name", site.getName());
+		return entity;
 	}
 
 	public static Site toSite(Entity entity) {
@@ -26,6 +28,9 @@ public abstract class SiteEntityHelper {
 			return null;
 		}
 
-		return new Site(entity.getKey().getName());
+		String site = entity.getKey().getName();
+		String name = (String) entity.getProperty("name");
+
+		return new Site(site, name);
 	}
 }

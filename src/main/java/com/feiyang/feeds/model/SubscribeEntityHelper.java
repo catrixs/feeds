@@ -49,6 +49,7 @@ public class SubscribeEntityHelper {
 		Entity entity = new Entity(key);
 		entity.setProperty("site", subscribe.getSite());
 
+		entity.setUnindexedProperty("name", subscribe.getName());
 		entity.setUnindexedProperty("uid", subscribe.getUid());
 		entity.setUnindexedProperty("feeds", subscribe.getFeeds());
 		return entity;
@@ -61,10 +62,11 @@ public class SubscribeEntityHelper {
 
 		long id = entity.getKey().getId();
 		String site = entity.getProperty("site").toString();
+		String name = entity.getProperty("name").toString();
 		long uid = (long) entity.getProperty("uid");
 		@SuppressWarnings("unchecked")
 		List<Long> feeds = (List<Long>) entity.getProperty("feeds");
 
-		return new Subscribe(id, site, uid, feeds);
+		return new Subscribe(id, site, name, uid, feeds);
 	}
 }
